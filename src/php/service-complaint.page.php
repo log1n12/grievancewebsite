@@ -1,24 +1,92 @@
 <?php
 session_start();
 require_once 'database/config.php';
+$message = "";
 
 if (isset($_POST['submitComplaint'])) {
-    $complainantFirstName = $_POST['complainantFirstName'];
-    $complainantLastName = $_POST['complainantLastName'];
-    $complainantMiddleName = $_POST['complainantMiddleName'];
-    $complainantFullName = $complainantFirstName . " " . $complainantMiddleName . " " . $complainantLastName;
+    $compFname = $_POST["compFname"];
+    $compLname = $_POST["compLname"];
+    $compMname = $_POST["compMname"];
+    $compBrgy = $_POST["compBrgy"];
+    $compPurok = $_POST["compPurok"];
+    $compHouseNo = $_POST["compHouseNo"];
+    $compAddress = $_POST["compAddress"];
+    $compBday = $_POST["compBday"];
+    $compBplace = $_POST["compBplace"];
+    $compGender = $_POST["compGender"];
+    $compCivStatus = $_POST["compCivStatus"];
+    $compCitizenship = $_POST["compCitizenship"];
+    $compOccup = $_POST["compOccup"];
+    $compRelToHead = $_POST["compRelToHead"];
+    $compNumber = $_POST["compNumber"];
 
-    $complainantAge = $_POST['complainantAge'];
-    $complainantAddress = $_POST['complainantAddress'];
-    $complainantBarangay = $_POST['complainantBarangay'];
-    $complainantConNumber = $_POST['complainantConNumber'];
-    $complainantValidId = $_POST['complainantValidId'];
 
-    $suspectPosition = $_POST['suspectPosition'];
-    $suspectName = $_POST['suspectName'];
-    $complainantComplaint = $_POST['complainantComplaint'];
-    $suspectAddress = $_POST['suspectAddress'];
+    date_default_timezone_set("Asia/Manila");
+    $complaintTime = date("hisa");
+    $complaintDate = date("Ymd");
+    $complainRefNumber = $complaintDate . "" . $complaintTime;
 
+    $defFullName = $_POST["defFullname"];
+    $defBrgy = $_POST["defBrgy"];
+    $defAddress = $_POST["defAddress"];
+    $defIdentity = $_POST["defIdentity"];
+
+    $compRBIid = "";
+    $compComplaint = $_POST["compComplaint"];
+    $compDate = $_POST["compDate"];
+    $compTime = $_POST["compTime"];
+    $compWhere = $_POST["compWhere"];
+
+    //CHECK IF USER IS EXISTING
+
+    $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND middle_name = :mname AND last_name = :lname AND house_no = :houseno AND brgy = :brgy AND purok = :purok";
+    $checkCompStmt = $con->prepare($checkCompQuery);
+    $checkCompStmt->execute([
+        'fname' => $compFname,
+        'mname' => $compMname,
+        'lname' => $compLname,
+        'houseno' => $compHouseNo,
+        'brgy' => $compBrgy,
+        'purok' => $compPurok
+    ]);
+    $countComp = $checkCompStmt->rowCount();
+    $getCompQuery = "SELECT * FROM rbi WHERE first_name = '$compFname' AND middle_name = '$compMname' AND last_name = '$compLname' AND house_no = '$compHouseNo' AND brgy = '$compBrgy' AND purok = '$compPurok'";
+    if ($countComp > 0) {
+        foreach ($defFullName as $key => $value) {
+            $addToDef = "INSERT INTO defendant (case_ref_no, full_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defAddress[$key]', '$defBrgy[$key]', '$defIdentity[$key]')";
+            $con->exec($addToDef);
+        }
+
+        //GET THE ID IN RBI TABLE OF COMPLAINANT
+        $getCompId = $con->query($getCompQuery);
+        foreach ($getCompId as $row) {
+            $compRBIid = $row['id'];
+        }
+
+        //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
+        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place) VALUES ('$complainRefNumber','$compRBIid','$compComplaint','$compDate','$compTime','$compWhere')";
+        $con->exec($addToComp);
+    } else {
+        //INSERT DATA TO RBI TABLE
+        $addToRBI = "INSERT INTO rbi (first_name, middle_name, last_name,  brgy, purok, house_no, comp_address, birth_date, birth_place, gender, civil_status, citizenship, occupation, relationship, contact_no) VALUES ('$compFname','$compMname','$compLname','$compBrgy','$compPurok','$compHouseNo','$compAddress','$compBday','$compBplace','$compGender','$compCivStatus','$compCitizenship','$compOccup','$compRelToHead','$compNumber')";
+        $con->exec($addToRBI);
+
+        foreach ($defFullName as $key => $value) {
+            $addToDef = "INSERT INTO defendant (case_ref_no, full_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defAddress[$key]', '$defBrgy[$key]', '$defIdentity[$key]')";
+            $con->exec($addToDef);
+        }
+
+        //GET THE CONTACT NUMBER OF HOUSEHOLD HEAD AND MESSAGE
+
+        //GET THE ID IN RBI TABLE OF COMPLAINANT
+        $getCompId = $con->query($getCompQuery);
+        foreach ($getCompId as $row) {
+            $compRBIid = $row['id'];
+        }
+        //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
+        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place) VALUES ('$complainRefNumber','$compRBIid','$compComplaint','$compDate','$compTime','$compWhere')";
+        $con->exec($addToComp);
+    }
 }
 ?>
 
@@ -30,11 +98,9 @@ if (isset($_POST['submitComplaint'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
-        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="../css/main.style.css">
 
@@ -58,149 +124,114 @@ if (isset($_POST['submitComplaint'])) {
     <section id="form-section">
         <div class="container">
             <form method="post">
-                <input type="text" class="form-control" name="complainantFirstName" placeholder="First Name">
-                <input type="text" class="form-control" name="complainantLastName" placeholder="Last Name">
-                <input type="text" class="form-control" name="complainantMiddleName" placeholder="Middle Name">
-                <input type="text" class="form-control" name="complainantAge" placeholder="Age">
-                <input type="text" class="form-control" name="complainantAddress" placeholder="Address">
-                <select class="form-control" name="complainantBarangay">
-                    <option value="wow">Wow</option>
-                    <option value="nyaw">Nyaw</option>
-                    <option value="meow">Meow</option>
+                <!-- COMPLAINANT PERSONAL INFORMATION -->
+                <h4>Personal Information</h4>
+                <h3><?php echo $message; ?></h3>
+                <input type="text" name="compFname" placeholder="First Name" />
+                <input type="text" name="compLname" placeholder="Last Name" />
+                <input type="text" name="compMname" placeholder="Middle Name" />
+
+                <select name="compBrgy">
+                    <option value="Poblacion Uno">Poblacion Uno</option>
+                    <option value="Poblacion Dos">Poblacion Dos</option>
+                    <option value="Poblacion Tres">Poblacion Tres</option>
                 </select>
-                <input type="text" class="form-control" name="complainantConNumber" placeholder="Contact Number">
-                <input type="text" class="form-control" name="complainantValidId" placeholder="Valid ID">
+                <select name="compPurok">
+                    <option value="Purok 1">Purok 1</option>
+                    <option value="Purok 2">Purok 2</option>
+                    <option value="Purok 3">Purok 3</option>
+                </select>
+                <input type="text" name="compHouseNo" placeholder="House No." />
+                <input type="text" name="compAddress" placeholder="Address" />
+                <input type="date" name="compBday" placeholder="Birthdate" />
+                <input type="text" name="compBplace" placeholder="Place of Birth" />
+                <input type="radio" name="compGender" value="Male" checked />Male
+                <input type="radio" name="compGender" value="Female" />Female
+                <input type="text" name="compCivStatus" placeholder="Civil Status" />
+                <input type="text" name="compCitizenship" placeholder="Citizenship" />
+                <input type="text" name="compOccup" placeholder="Occupation" />
+                <input type="text" name="compRelToHead" placeholder="Relationship to Household Head" />
+                <input type="text" name="compNumber" placeholder="Contact Number" />
 
-                <fieldset class="form-group">
-                    <div class="row">
-                        <legend class="col-form-label col-sm-2 pt-0">Do you know info about kaaway mo?</legend>
-                        <div class="col-sm-10">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="yesOrNo" id="gridRadios3" value="yes"
-                                    onchange="displayQuestion(this.value)">
-                                <label class="form-check-label" for="gridRadios3">
-                                    Yes
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="yesOrNo" id="gridRadios4" value="no"
-                                    onchange="displayQuestion(this.value)">
-                                <label class="form-check-label" for="gridRadios4">
-                                    No
-                                </label>
-                            </div>
+                <h4>Complain</h4>
+                <div id="compComplaint-div">
+                    <input type="text" name="compComplaint" placeholder="Complaint" />
+                    <input type="date" name="compDate" placeholder="Date" />
+                    <input type="time" name="compTime" placeholder="Time" />
+                    <input type="text" name="compWhere" placeholder="Where" />
+                </div>
+                <h4>Defendant Information</h4>
+                <div id="defInfo-div">
+                    <div id="defInfo1-div">
+                        <input type="button" name="addDefendant" value="Add Another Defendant" id="addDef" />
+                        <button type="button" name="noDefInfo" value="defPic" id="noDefInfo" onclick="switchDiv(this.value)"> I Dont know any information about defendant </button>
+                        <div>
+                            <input type="text" name="defFullname[]" placeholder="Fullname" />
+                            <select name="defBrgy[]">
+                                <option value="Poblacion Uno">Poblacion Uno</option>
+                                <option value="Poblacion Dos">Poblacion Dos</option>
+                                <option value="Poblacion Tres">Poblacion Tres</option>
+                            </select>
+                            <input type="text" name="defAddress[]" placeholder="Address" />
+                            <select name="defIdentity[]">
+                                <option value="Resident">Resident</option>
+                                <option value="Official">Official</option>
+                            </select>
                         </div>
-                    </div>
-                </fieldset>
 
-                <div id="noQuestion" style="display:none;">
-                    <fieldset class="form-group">
-                        <div class="row">
-                            <legend class="col-form-label col-sm-2 pt-0">Do you have picture of your kaaway mo?</legend>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="yesOrNo1" id="gridRadios31"
-                                        value="yes" onchange="displayQuestion1(this.value)">
-                                    <label class="form-check-label" for="gridRadios31">
-                                        Yes
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="yesOrNo1" id="gridRadios41"
-                                        value="no" onchange="displayQuestion1(this.value)">
-                                    <label class="form-check-label" for="gridRadios41">
-                                        No
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
 
-                    <div id="yesQuestion1" style="display: none;">
-                        Enter picture
-                        <button type="submit" class="btn btn-primary" name="submitComplaint">Submit</button>
                     </div>
-                    <div id="noQuestion1" style="display: none;">
-                        You should go to your barangay
-                    </div>
+                    <input type="submit" name="submitComplaint" value="Submit Complaint" />
                 </div>
 
+                <div id="defPic-div" style="display: none;">
+                    Enter Picture
+                    <button type="button" name="noDefPicture" value="defInfo" id="noDefPicture" onclick="switchDiv(this.value)"> Back </button>
 
-                <div id="yesQuestion" style="display:none;">
-                    <fieldset class="form-group">
-                        <div class="row">
-                            <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="suspectPosition" id="gridRadios1"
-                                        value="resident">
-                                    <label class="form-check-label" for="gridRadios1">
-                                        Resident
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="suspectPosition" id="gridRadios2"
-                                        value="official">
-                                    <label class="form-check-label" for="gridRadios2">
-                                        Official
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-                    <input type="text" class="form-control" name="suspectName"
-                        placeholder="Who who you complaint complaint huh?">
-                    <input type="text" class="form-control" name="complainantComplaint"
-                        placeholder="What you complaint complaint about?">
-                    <input type="text" class="form-control" name="suspectAddress"
-                        placeholder="Address of you complaint complaint huh?">
-                    <button type="submit" class="btn btn-primary" name="submitComplaint">Submit</button>
                 </div>
-
-
 
             </form>
         </div>
     </section>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-        </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-        </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-        </script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
 
-    <script>
-        function displayQuestion(answer) {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var divAnotherDef = '<div> <input type="text" name ="defFullname[]" placeholder="Fullname" /><select name="defBrgy[]"><option value = "Poblacion Uno" > Poblacion Uno </option> <option value = "Poblacion Dos" > Poblacion Dos </option> <option value = "Poblacion Tres" > Poblacion Tres </option> </select> <input type = "text" name = "defAddress[]"placeholder = "Address" / ><select name="defIdentity[]"> <option value = "Resident" > Resident </option> <option value = "Official" > Official </option> </select> <input type="button" name="removeDefendant" value="X" id="removeDef" / > ';
 
-            document.getElementById(answer + 'Question').style.display = "block";
+            var x = 1;
+            var max = 4;
 
-            if (answer == "yes") { // hide the div that is not selected
+            $("#addDef").click(function() {
+                if (x <= max) {
+                    $("#defInfo1-div").append(divAnotherDef);
+                    x++;
+                }
+            });
 
-                document.getElementById('noQuestion').style.display = "none";
+            $("#defInfo1-div").on('click', '#removeDef', function() {
+                $(this).closest('div').remove();
+                x--;
+            });
+        });
 
-            } else if (answer == "no") {
+        function switchDiv(divi) {
 
-                document.getElementById('yesQuestion').style.display = "none";
+            document.getElementById(divi + '-div').style.display = "block";
 
-            }
+            if (divi == "defPic") { // hide the div that is not selected
 
-        }
+                document.getElementById('defInfo-div').style.display = "none";
 
-        function displayQuestion1(answer) {
+            } else if (divi == "defInfo") {
 
-            document.getElementById(answer + 'Question1').style.display = "block";
-
-            if (answer == "yes") { // hide the div that is not selected
-
-                document.getElementById('noQuestion1').style.display = "none";
-
-            } else if (answer == "no") {
-
-                document.getElementById('yesQuestion1').style.display = "none";
+                document.getElementById('defPic-div').style.display = "none";
 
             }
 
