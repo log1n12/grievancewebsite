@@ -1,3 +1,37 @@
+<?php
+session_start();
+require_once 'database/config.php';
+$message = "";
+
+if (isset($_POST['loginButton'])) {
+    $uname = $_POST["username"];
+    $upass = $_POST["password"];
+    //CHECK IF THE USERNAME AND PASSWORD IS EXISTING
+    $loginquery = "SELECT * FROM account WHERE username = :uname AND upassword = :upass";
+    $loginstmt = $con->prepare($loginquery);
+    $loginstmt->execute([
+        'uname' => $uname,
+        'upass' => $upass
+    ]);
+
+    $count = $loginstmt->rowCount();
+    if ($count > 0) {
+        $loginquery1 = "SELECT * FROM account where username = '$uname'";
+        $loginstmt1 = $con->query($loginquery1);
+        foreach ($loginstmt1 as $row) {
+            $admintype = $row["admin_type"];
+            $id = $row["id"];
+        }
+        if ($admintype == "barangay") {
+            $_SESSION["id"] = $id;
+            header("location:barangay-dashboard.page.php");
+        }
+    } else {
+        $message = "Your username and password doesn't match! Please try again.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,6 +54,22 @@
     <section>
         <div class="container">
             <h1>Login</h1>
+            <form method="post">
+                <input type="text" name="username" placeholder="Username" />
+                <input type="password" name="password" placeholder="Password" />
+                <input type="submit" name="loginButton" value="Login" />
+            </form>
+            <?php
+            //SHOW ALERT MESSAGE 
+            if ($message != "") {
+                echo '<div class="alert alert-dismissible fade show" role="alert">
+										<strong>Oops! </strong>' . $message .
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+										</div>';
+            }
+            ?>
         </div>
     </section>
 
