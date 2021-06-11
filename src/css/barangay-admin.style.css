@@ -1,7 +1,33 @@
- @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+ :root {
+     --bgColor: #ECF1F5;
+     --redAccent: #F6484A;
+     --yellowAccent: #ECDA3F;
+     --fontColor: #4C4C4C;
+ }
+
+ @import url('https://fonts.googleapis.com/css?family=Raleway&family=Roboto&display=swap');
+ @font-face {
+     font-family: Poppins-Medium;
+     src: url(../fonts/Poppins-Medium.ttf);
+ }
+
+ @font-face {
+     font-family: Poppins;
+     src: url(../fonts/Poppins-Regular.ttf);
+ }
+
+ @font-face {
+     font-family: Poppins-Light;
+     src: url(../fonts/Poppins-Light.ttf);
+ }
+
+ @font-face {
+     font-family: Roboto;
+     src: url(../fonts/Roboto-Regular.ttf);
+ }
+
  * {
      /* border: 1px solid red; */
-     font-family: 'Poppins', sans-serif;
  }
 
  html {
@@ -13,7 +39,8 @@
  }
 
  body {
-     background-color: #ECF1F5;
+     background-color: var(--bgColor);
+     font-family: 'Poppins';
  }
 
  /*NAVBAR*/
@@ -60,8 +87,7 @@
 
  .vertical-nav a .navlink {
      color: #FCFDFF;
-     font-family: 'Poppins', sans-serif;
-     font-weight: 400;
+     font-weight: 500;
      font-size: 13px;
  }
 
@@ -86,7 +112,7 @@
  }
 
  .vertical-nav .nav-item a:hover {
-     background: #ECDA3F;
+     background: var(--yellowAccent);
      transition: all linear 0.5s;
  }
 
@@ -101,7 +127,7 @@
  }
 
  .vertical-nav .nav-item .active {
-     background: #ECDA3F;
+     background: var(--yellowAccent);
      transition: all linear 0.5s;
  }
 
@@ -116,13 +142,12 @@
  }
 
  .topnav .page-title {
-     font-family: 'Poppins', sans-serif;
      color: black;
      font-size: 25px;
  }
 
  .topnav .fas {
-     color: #F6484A;
+     color: var(--redAccent);
  }
 
  .alert {
@@ -135,7 +160,6 @@
  /*CONTENT*/
 
  #content {
-     animation: transitionIn 2s;
      min-width: 500px;
  }
 
@@ -160,20 +184,124 @@
      border-radius: 50%;
      padding: 20px;
      color: white;
-     background-color: #F6484A;
+     background-color: var(--redAccent);
  }
 
  #list-count .card h5 {
      font-size: 25px;
      font-weight: 600;
      letter-spacing: 1px;
-     color: #4C4C4C;
+     color: var(--fontColor);
  }
 
  #list-count .card small {
-     color: #4C4C4C;
+     color: var(--fontColor);
      font-size: 12px;
      font-weight: 300;
+ }
+
+ /*TABLE CONTENT */
+
+ #table-section {
+     background-color: #F3F6FB;
+     border: 1px solid #D4D7DC;
+     -webkit-border-radius: 30px;
+     -moz-border-radius: 30px;
+     border-radius: 30px;
+ }
+
+ #tableNavbar h1 {
+     font-size: 20px;
+ }
+
+ #table-section tbody tr th, #table-section tbody tr td {
+     vertical-align: middle;
+ }
+
+ #table-section .table>thead>tr>th {
+     border-top: none;
+ }
+
+ #table-section .table thead {
+     font-size: 11px;
+     color: #545454;
+ }
+
+ #table-section .table tbody {
+     font-size: 14px;
+     color: black;
+     font-family: 'Poppins';
+ }
+
+ #table-section .sort .btnSort {
+     background-color: transparent;
+     color: black;
+     border-color: var(--redAccent);
+     border-radius: 40px;
+     font-size: 13px;
+     box-shadow: none;
+ }
+
+ #table-section .sort .btnSort:hover {
+     background-color: var(--redAccent);
+     color: white;
+ }
+
+ #table-section .sort .active {
+     background-color: var(--redAccent);
+     color: white;
+ }
+
+ /*  */
+
+ #table-section1 {
+     background-color: #F3F6FB;
+     border: 1px solid #D4D7DC;
+     -webkit-border-radius: 30px;
+     -moz-border-radius: 30px;
+     border-radius: 30px;
+ }
+
+ #tableNavbar1 h1 {
+     font-size: 20px;
+ }
+
+ #table-section1 tbody tr th, #table-section tbody tr td {
+     vertical-align: middle;
+ }
+
+ #table-section1 .table>thead>tr>th {
+     border-top: none;
+ }
+
+ #table-section1 .table thead {
+     font-size: 11px;
+     color: #545454;
+ }
+
+ #table-section1 .table tbody {
+     font-size: 14px;
+     color: black;
+     font-family: 'Poppins';
+ }
+
+ #table-section1 .sort .btnSort {
+     background-color: transparent;
+     color: black;
+     border-color: var(--redAccent);
+     border-radius: 40px;
+     font-size: 13px;
+     box-shadow: none;
+ }
+
+ #table-section1 .sort .btnSort:hover {
+     background-color: var(--redAccent);
+     color: white;
+ }
+
+ #table-section1 .sort .active {
+     background-color: var(--redAccent);
+     color: white;
  }
 
  @keyframes transitionIn {

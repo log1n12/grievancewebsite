@@ -63,7 +63,147 @@
                     </div>
                 </div>
             </section>
-            History
+            <section id="table-section">
+                <div id="tableNavbar">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h1 class="mx-4 mt-4">List of Complaints</h1>
+                        </div>
+                        <div class="col-md-6 text-right align-self-center">
+                            <button id="addBtn" class="add btn mx-4 mt-4" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" data-placement="left" title="Add Hospital"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="collapse" id="collapseExample">
+                        <div class="container">
+                            <div class="card card-body transparent">
+                                <form method="post" enctype="multipart/form-data">
+                                    <div class="container formm">
+                                        <div class="row">
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="First Name" name="ufirstname" id="fnamelbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Last Name" name="ulastname" id="lnamelbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="email" class="form-control transparent text-center" placeholder="Email" name="uemail" id="emaillbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Username" name="uname" id="unamelbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="password" class="form-control transparent text-center" placeholder="Password" name="upass" name="upass" id="password" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Hospital Name" name="hospname" id="hospnamelbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Hospital Address" name="hospaddress" id="hospaddlbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Hospital Town" name="hosptown" id="hosptownlbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control transparent text-center" placeholder="Hospital Website" name="uwebsite" id="hospweblbl" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="file" name="profileImage" id="profileImage" class="form-control-file transparent" onChange="displayImage(this)" required><br>
+                                                    <img src="" style="max-width: 300px;" class="img-fluid transparent" id="profileDisplay" onclick="triggerClick()">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit" name="submit" class="addhospbtn btn btn-block ">Add Hospital</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tableContent" class="table-responsive mt-3 px-4">
+                    <div class="row">
+                        <div class="col-md-12 align-self-center">
+                            <form class="d-flex align-items-center sort">
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1 active" name="all" value="all">All</button>
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Confirmation</button>
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Pending</button>
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Ongoing</button>
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Completed</button>
+                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Archive</button>
+                            </form>
+                            <table class="table text-center mt-4" style="width: 100%">
+                                <colgroup>
+                                    <col span="1" style="width: 2%;">
+                                    <col span="1" style="width: 13%;">
+                                    <col span="1" style="width: 13%;">
+                                    <col span="1" style="width: 13%;">
+                                    <col span="1" style="width: 30%;">
+                                    <col span="1" style="width: 8%;">
+                                    <col span="1" style="width: 7%;">
+                                    <col span="1" style="width: 8%;">
+                                    <col span="1" style="width: 2%;">
+                                    <col span="1" style="width: 2%;">
+                                    <col span="1" style="width: 2%;">
+                                </colgroup>
+                                <thead class="">
+                                    <tr>
+                                        <th>#</th>
+                                        <th scope="col">Reference Numbers</th>
+                                        <th scope="col">Complainant</th>
+                                        <th scope="col">Defendant</th>
+                                        <th scope="col">Complaint</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Picture</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>20123123asdaa</td>
+                                        <td>Carl Bermundo</td>
+                                        <td>Ivan Perez<br>ASDsaddd<br>asddac zxasd </td>
+                                        <td>ASDASDASD asda sdaDas asgagskdkahjs daskjhd ahsdghkas kldahskjhd aslkjd kjasdlj asjdh alskdj jahdk asjdjh askldjh ashjkdh askjdh kahsdkh aksjhdk ashdkh akshd
+                                        </td>
+                                        <td>Confirmation</td>
+                                        <td>View Picture</td>
+                                        <td>2012-15-15</td>
+                                        <td>X</td>
+                                        <td>X</td>
+                                        <td>X</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>20123123asdaa</td>
+                                        <td>Carl Bermundo</td>
+                                        <td>Juvy Novicio<br> </td>
+                                        <td>ASDASDASD asda sdaDas asgagskdkahjs daskjhd ahsdghkas kldahskjhd aslkjd kjasdlj asjdh alskdj jahdk asjdjh askldjh ashjkdh askjdh kahsdkh aksjhdk ashdkh akshd
+                                        </td>
+                                        <td>Completed</td>
+                                        <td>View Picture</td>
+                                        <td>2012-15-15</td>
+                                        <td>X</td>
+                                        <td>X</td>
+                                        <td>X</td>
+                                    </tr>
+                                </tbody>
+
+
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
         </div>
     </div>
 

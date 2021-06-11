@@ -7,7 +7,7 @@ if (isset($_POST['loginButton'])) {
     $uname = $_POST["username"];
     $upass = $_POST["password"];
     //CHECK IF THE USERNAME AND PASSWORD IS EXISTING
-    $loginquery = "SELECT * FROM account WHERE username = :uname AND upassword = :upass";
+    $loginquery = "SELECT * FROM account WHERE username = :uname AND user_password= :upass";
     $loginstmt = $con->prepare($loginquery);
     $loginstmt->execute([
         'uname' => $uname,
@@ -19,11 +19,11 @@ if (isset($_POST['loginButton'])) {
         $loginquery1 = "SELECT * FROM account where username = '$uname'";
         $loginstmt1 = $con->query($loginquery1);
         foreach ($loginstmt1 as $row) {
-            $admintype = $row["admin_type"];
+            $admintype = $row["user_type"];
             $id = $row["id"];
         }
-        if ($admintype == "barangay") {
-            $_SESSION["id"] = $id;
+        if ($admintype == "barangay_admin") {
+            setcookie('id', $id, time() + (60 * 60 * 24 * 365), '/');
             header("location:barangay-dashboard.page.php");
         }
     } else {

@@ -1,3 +1,22 @@
+<?php
+session_start();
+require_once './database/config.php';
+require_once './database/barangay-admin.check.php';
+
+if (isset($_GET['toCompletedBtn'])) {
+    $id = $_GET['id'];
+    $unreadsql = "UPDATE complaint_case SET case_status = :case_status WHERE id = :id";
+    $unreadstmt = $con->prepare($unreadsql);
+    if ($unreadstmt->execute([
+        ':case_status' => "Completed",
+        ':id' => $id
+
+    ])) {
+        $message = "Updated";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,7 +70,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-sm-4 align-self-center"><i class="fas fa-comments fa-1x mr-3"></i></div>
+                                    <div class="col-sm-4 align-self-center"><i class="fas fa-comments fa-1x mr-3"></i>
+                                    </div>
                                     <div class="col-sm-8 text-right">
                                         <h5 class="card-text">30</h5>
                                         <small class="card-text">Number of Feedback</small>
@@ -128,35 +148,34 @@
                     <div class="row">
                         <div class="col-md-12 align-self-center">
                             <form class="d-flex align-items-center sort">
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1 active" name="all" value="all">All</button>
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Confirmation</button>
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Pending</button>
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Ongoing</button>
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Completed</button>
-                                <button type="submit" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Archive</button>
+                                <a href="./barangay-complaint.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">All</a>
+                                <a href="./barangay-complaint-pending.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Pending</a>
+                                <a href="./barangay-complaint-confirm.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Payment</a>
+                                <a href="./barangay-complaint-ongoing.page.php" class="btn btn-dark btnSort px-4 mr-1 active" name="all" value="all">Ongoing</a>
+                                <a href="./barangay-complaint-completed.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Completed</a>
                             </form>
-                            <table class="table text-center mt-4" style="width: 100%">
+                            <table class="table text-center mt-4" id="myTable" style="width: 100%">
                                 <colgroup>
-                                    <col span="1" style="width: 2%;">
+                                    <col span="1" style="width: 5%;">
                                     <col span="1" style="width: 13%;">
                                     <col span="1" style="width: 13%;">
                                     <col span="1" style="width: 13%;">
                                     <col span="1" style="width: 30%;">
                                     <col span="1" style="width: 8%;">
                                     <col span="1" style="width: 7%;">
-                                    <col span="1" style="width: 8%;">
+                                    <col span="1" style="width: 7%;">
                                     <col span="1" style="width: 2%;">
                                     <col span="1" style="width: 2%;">
                                     <col span="1" style="width: 2%;">
                                 </colgroup>
                                 <thead class="">
                                     <tr>
-                                        <th>#</th>
-                                        <th scope="col">Reference Numbers</th>
-                                        <th scope="col">Complainant</th>
+                                        <th onclick="sortTable(0)">ID <i class="fas fa-sort"></i></th>
+                                        <th onclick="sortTable(1)" scope="col">Reference Numbers <i class="fas fa-sort"></i></th>
+                                        <th onclick="sortTable(2)" scope="col">Complainant <i class="fas fa-sort"></i></th>
                                         <th scope="col">Defendant</th>
                                         <th scope="col">Complaint</th>
-                                        <th scope="col">Status</th>
+                                        <th onclick="sortTable(3)" scope="col">Status</th>
                                         <th scope="col">Picture</th>
                                         <th scope="col">Date</th>
                                         <th scope="col"></th>
@@ -166,34 +185,60 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>20123123asdaa</td>
-                                        <td>Carl Bermundo</td>
-                                        <td>Ivan Perez<br>ASDsaddd<br>asddac zxasd </td>
-                                        <td>ASDASDASD asda sdaDas asgagskdkahjs daskjhd ahsdghkas kldahskjhd aslkjd kjasdlj asjdh alskdj jahdk asjdjh askldjh ashjkdh askjdh kahsdkh aksjhdk ashdkh akshd
-                                        </td>
-                                        <td>Confirmation</td>
-                                        <td>View Picture</td>
-                                        <td>2012-15-15</td>
-                                        <td>X</td>
-                                        <td>X</td>
-                                        <td>X</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>20123123asdaa</td>
-                                        <td>Carl Bermundo</td>
-                                        <td>Juvy Novicio<br> </td>
-                                        <td>ASDASDASD asda sdaDas asgagskdkahjs daskjhd ahsdghkas kldahskjhd aslkjd kjasdlj asjdh alskdj jahdk asjdjh askldjh ashjkdh askjdh kahsdkh aksjhdk ashdkh akshd
-                                        </td>
-                                        <td>Completed</td>
-                                        <td>View Picture</td>
-                                        <td>2012-15-15</td>
-                                        <td>X</td>
-                                        <td>X</td>
-                                        <td>X</td>
-                                    </tr>
+                                    <?php
+                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE defendant_type = 'Resident' AND case_status ='Ongoing'";
+                                    $showComplaintQuery = $con->query($showComplaintSql);
+                                    foreach ($showComplaintQuery as $row) {
+                                        $complaintId = $row['id'];
+                                        $complaintRefNo = $row['case_ref_no'];
+                                        $complainantId = $row['comp_rbi_no'];
+                                        $complaint = $row['complaint'];
+                                        $complaintStatus = $row['case_status'];
+                                        $complaintPic = $row['incident_pic'];
+                                        $complaintDateSubmit = $row['date_submit'];
+
+                                        $showComplainantBrgy = "SELECT * FROM rbi WHERE id = '$complainantId'";
+                                        $showComplainantBrgyQue = $con->query($showComplainantBrgy);
+                                        foreach ($showComplainantBrgyQue as $row1) {
+                                            $complainantBrgy = $row1['brgy'];
+                                            $complainantFullname = $row1['first_name'] . ' ' . $row1['middle_name'] . ' ' . $row1['last_name'];
+
+                                            if ($complainantBrgy == $barangayName) {
+                                    ?>
+                                                <form method="get">
+
+                                                    <tr>
+                                                        <td><?php echo $complaintId ?><input type="hidden" name="id" value="<?php echo $complaintId ?>" /> </td>
+                                                        <td><?php echo $complaintRefNo ?> </td>
+                                                        <td><?php echo $complainantFullname ?> </td>
+                                                        <td>
+                                                            <?php
+                                                            $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
+                                                            $getDefendantQuery = $con->query($getDefendant);
+                                                            foreach ($getDefendantQuery as $row2) {
+                                                                $defFullname = $row2['full_name'];
+
+                                                                echo $defFullname;
+
+                                                            ?>
+                                                                <br>
+                                                            <?php } ?>
+
+                                                        </td>
+                                                        <td><?php echo $complaint ?></td>
+                                                        <td><?php echo $complaintStatus ?></td>
+                                                        <td><?php echo $complaintPic ?></td>
+                                                        <td><?php echo $complaintDateSubmit ?></td>
+                                                        <td><button type="submit" name="toCompletedBtn"><i class="fas fa-check"></i></button></td>
+                                                        <td><button><i class="fas fa-trash"></i></button></td>
+                                                        <td><button><i class="fas fa-ellipsis-h"></i></button></td>
+                                                    </tr>
+                                                </form>
+                                    <?php
+                                            }
+                                        }
+                                    }
+                                    ?>
                                 </tbody>
 
 
@@ -221,6 +266,61 @@
                 $('#sidebar, #content').toggleClass('active');
             });
         });
+
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("myTable");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until
+            no switching has been done: */
+            while (switching) {
+                // Start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /* Loop through all table rows (except the
+                first, which contains table headers): */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // Start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare,
+                    one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /* Check if the two rows should switch place,
+                    based on the direction, asc or desc: */
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch
+                    and mark that a switch has been done: */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    // Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                } else {
+                    /* If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again. */
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
     </script>
 </body>
 

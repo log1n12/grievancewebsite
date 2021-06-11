@@ -22,9 +22,12 @@ if (isset($_POST['submitComplaint'])) {
 
 
     date_default_timezone_set("Asia/Manila");
-    $complaintTime = date("hisa");
+    $complaintTime = date("His");
     $complaintDate = date("Ymd");
-    $complainRefNumber = $complaintDate . "" . $complaintTime;
+    $complaintDate1 = date("F d, Y");
+    $complaintMonth = date("F");
+    $complaintYear = date("Y");
+    $complainRefNumber = "C" . $complaintDate . "" . $complaintTime;
 
     $defFullName = $_POST["defFullname"];
     $defBrgy = $_POST["defBrgy"];
@@ -64,8 +67,11 @@ if (isset($_POST['submitComplaint'])) {
         }
 
         //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
-        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place) VALUES ('$complainRefNumber','$compRBIid','$compComplaint','$compDate','$compTime','$compWhere')";
-        $con->exec($addToComp);
+        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type) VALUES ('$complainRefNumber','$compRBIid',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','complaint')";
+        $addtoCompStmt = $con->prepare($addToComp);
+        $addtoCompStmt->execute(array(
+            ':complaint' => $compComplaint
+        ));
     } else {
         //INSERT DATA TO RBI TABLE
         $addToRBI = "INSERT INTO rbi (first_name, middle_name, last_name,  brgy, purok, house_no, comp_address, birth_date, birth_place, gender, civil_status, citizenship, occupation, relationship, contact_no) VALUES ('$compFname','$compMname','$compLname','$compBrgy','$compPurok','$compHouseNo','$compAddress','$compBday','$compBplace','$compGender','$compCivStatus','$compCitizenship','$compOccup','$compRelToHead','$compNumber')";
@@ -84,8 +90,11 @@ if (isset($_POST['submitComplaint'])) {
             $compRBIid = $row['id'];
         }
         //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
-        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place) VALUES ('$complainRefNumber','$compRBIid','$compComplaint','$compDate','$compTime','$compWhere')";
-        $con->exec($addToComp);
+        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type) VALUES ('$complainRefNumber','$compRBIid',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','complaint')";
+        $addtoCompStmt = $con->prepare($addToComp);
+        $addtoCompStmt->execute(array(
+            ':complaint' => $compComplaint
+        ));
     }
 }
 ?>
@@ -132,9 +141,18 @@ if (isset($_POST['submitComplaint'])) {
                 <input type="text" name="compMname" placeholder="Middle Name" />
 
                 <select name="compBrgy">
-                    <option value="Poblacion Uno">Poblacion Uno</option>
-                    <option value="Poblacion Dos">Poblacion Dos</option>
-                    <option value="Poblacion Tres">Poblacion Tres</option>
+                    <?php
+                    $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
+                    $barangayStmt = $con->query($barangayQuery);
+                    foreach ($barangayStmt as $row) {
+                        $barangayRow = $row['barangay'];
+
+                    ?>
+                        <option value="<?php echo $barangayRow ?>"><?php echo $barangayRow ?></option>
+                    <?php
+                    }
+                    ?>
+
                 </select>
                 <select name="compPurok">
                     <option value="Purok 1">Purok 1</option>

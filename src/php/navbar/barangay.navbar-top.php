@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <p class="nav-link name-link">Welcome Back, <span id="name" class="text-capitalize"></span> </p>
+                <p class="nav-link name-link">Welcome Back, <?php echo $userName ?><span id="name" class="text-capitalize"></span> </p>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="hadminprof.php"><i class="fas fa-cog"></i></a>

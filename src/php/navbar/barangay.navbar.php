@@ -16,9 +16,6 @@
                 <a href="barangay-report.page.php" class="nav-link "><i class="far fa-hospital fas mr-3"></i></i><span class="navlink">Reports</span></a>
             </li>
             <li class="nav-item">
-                <a href="barangay-history.page.php" class="nav-link "><i class="fas fa-file-medical mr-3"></i><span class="navlink">History</span></a>
-            </li>
-            <li class="nav-item">
                 <a href="barangay-archive.page.php" class="nav-link "><i class="fas fa-user mr-3"></i><span class="navlink">Archive</span></a>
             </li>
             <li class="nav-item mt-4">
@@ -26,9 +23,6 @@
             </li>
             <li class="nav-item">
                 <a href="barangay-rbi.page.php" class="nav-link"><i class="fas fa-paper-plane mr-3"></i><span class="navlink">RBI</span></a>
-            </li>
-            <li class="nav-item">
-                <a href="barangay-kp.page.php" class="nav-link"><i class="fas fa-paper-plane mr-3"></i><span class="navlink">KP Reports</span></a>
             </li>
             <li class="nav-item">
                 <a href="gotomain.php" class="nav-link" onclick="return confirm('Going to website will automatically logout your account? Do you want to proceed?')"><i class="fas fa-globe mr-3"></i><span class="navlink">Go to Website</span></a>
