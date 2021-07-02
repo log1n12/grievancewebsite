@@ -2,102 +2,8 @@
 session_start();
 require_once './database/config.php';
 require_once './database/barangay-admin.check.php';
+$titleHeader = "Report";
 $message = "";
-
-if (isset($_POST['submitComplaint'])) {
-    $compFname = $_POST["compFname"];
-    $compLname = $_POST["compLname"];
-    $compMname = $_POST["compMname"];
-    $compBrgy = $_POST["compBrgy"];
-    $compPurok = $_POST["compPurok"];
-    $compHouseNo = $_POST["compHouseNo"];
-    $compAddress = $_POST["compAddress"];
-    $compBday = $_POST["compBday"];
-    $compBplace = $_POST["compBplace"];
-    $compGender = $_POST["compGender"];
-    $compCivStatus = $_POST["compCivStatus"];
-    $compCitizenship = $_POST["compCitizenship"];
-    $compOccup = $_POST["compOccup"];
-    $compRelToHead = $_POST["compRelToHead"];
-    $compNumber = $_POST["compNumber"];
-
-
-    date_default_timezone_set("Asia/Manila");
-    $complaintTime = date("His");
-    $complaintDate = date("Ymd");
-    $complaintDate1 = date("F d, Y");
-    $complaintMonth = date("F");
-    $complaintYear = date("Y");
-    $complainRefNumber = "R" . $complaintDate . "" . $complaintTime;
-
-    $defFullName = $_POST["defFullname"];
-    $defBrgy = $_POST["defBrgy"];
-    $defAddress = $_POST["defAddress"];
-    $defIdentity = $_POST["defIdentity"];
-
-    $compRBIid = "";
-    $compComplaint = $_POST["compComplaint"];
-    $compDate = $_POST["compDate"];
-    $compTime = $_POST["compTime"];
-    $compWhere = $_POST["compWhere"];
-
-    //CHECK IF USER IS EXISTING
-
-    $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND middle_name = :mname AND last_name = :lname AND house_no = :houseno AND brgy = :brgy AND purok = :purok";
-    $checkCompStmt = $con->prepare($checkCompQuery);
-    $checkCompStmt->execute([
-        'fname' => $compFname,
-        'mname' => $compMname,
-        'lname' => $compLname,
-        'houseno' => $compHouseNo,
-        'brgy' => $compBrgy,
-        'purok' => $compPurok
-    ]);
-    $countComp = $checkCompStmt->rowCount();
-    $getCompQuery = "SELECT * FROM rbi WHERE first_name = '$compFname' AND middle_name = '$compMname' AND last_name = '$compLname' AND house_no = '$compHouseNo' AND brgy = '$compBrgy' AND purok = '$compPurok'";
-    if ($countComp > 0) {
-        foreach ($defFullName as $key => $value) {
-            $addToDef = "INSERT INTO defendant (case_ref_no, full_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defAddress[$key]', '$defBrgy[$key]', '$defIdentity[$key]')";
-            $con->exec($addToDef);
-        }
-
-        //GET THE ID IN RBI TABLE OF COMPLAINANT
-        $getCompId = $con->query($getCompQuery);
-        foreach ($getCompId as $row) {
-            $compRBIid = $row['id'];
-        }
-
-        //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
-        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type) VALUES ('$complainRefNumber','$compRBIid',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','report')";
-        $addtoCompStmt = $con->prepare($addToComp);
-        $addtoCompStmt->execute(array(
-            ':complaint' => $compComplaint
-        ));
-    } else {
-        //INSERT DATA TO RBI TABLE
-        $addToRBI = "INSERT INTO rbi (first_name, middle_name, last_name,  brgy, purok, house_no, comp_address, birth_date, birth_place, gender, civil_status, citizenship, occupation, relationship, contact_no) VALUES ('$compFname','$compMname','$compLname','$compBrgy','$compPurok','$compHouseNo','$compAddress','$compBday','$compBplace','$compGender','$compCivStatus','$compCitizenship','$compOccup','$compRelToHead','$compNumber')";
-        $con->exec($addToRBI);
-
-        foreach ($defFullName as $key => $value) {
-            $addToDef = "INSERT INTO defendant (case_ref_no, full_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defAddress[$key]', '$defBrgy[$key]', '$defIdentity[$key]')";
-            $con->exec($addToDef);
-        }
-
-        //GET THE CONTACT NUMBER OF HOUSEHOLD HEAD AND MESSAGE
-
-        //GET THE ID IN RBI TABLE OF COMPLAINANT
-        $getCompId = $con->query($getCompQuery);
-        foreach ($getCompId as $row) {
-            $compRBIid = $row['id'];
-        }
-        //INSERT THE COMPLAINT TO COMPLAINT_CASE TABLE
-        $addToComp = "INSERT INTO complaint_case (case_ref_no, comp_rbi_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type) VALUES ('$complainRefNumber','$compRBIid',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','report')";
-        $addtoCompStmt = $con->prepare($addToComp);
-        $addtoCompStmt->execute(array(
-            ':complaint' => $compComplaint
-        ));
-    }
-}
 
 ?>
 <!DOCTYPE html>
@@ -169,100 +75,24 @@ if (isset($_POST['submitComplaint'])) {
                 <div id="tableNavbar">
                     <div class="row">
                         <div class="col-md-6">
-                            <h1 class="mx-4 mt-4">Pending Reports</h1>
+                            <h1 class="mx-4 mt-4">List of Reports</h1>
                         </div>
                         <div class="col-md-6 text-right align-self-center">
-                            <button id="addBtn" class="add btn mx-4 mt-4" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" data-placement="left" title="Add Hospital"><i class="fas fa-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="collapse" id="collapseExample">
-                        <div class="container">
-                            <div class="card card-body transparent">
-                                <form method="post">
-                                    <!-- COMPLAINANT PERSONAL INFORMATION -->
-                                    <h4>Personal Information</h4>
-                                    <h3><?php echo $message; ?></h3>
-                                    <input type="text" name="compFname" placeholder="First Name" />
-                                    <input type="text" name="compLname" placeholder="Last Name" />
-                                    <input type="text" name="compMname" placeholder="Middle Name" />
-
-                                    <select name="compBrgy">
-                                        <?php
-                                        $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
-                                        $barangayStmt = $con->query($barangayQuery);
-                                        foreach ($barangayStmt as $row) {
-                                            $barangayRow = $row['barangay'];
-
-                                        ?>
-                                            <option value="<?php echo $barangayRow ?>"><?php echo $barangayRow ?></option>
-                                        <?php
-                                        }
-                                        ?>
-
-                                    </select>
-                                    <select name="compPurok">
-                                        <option value="Purok 1">Purok 1</option>
-                                        <option value="Purok 2">Purok 2</option>
-                                        <option value="Purok 3">Purok 3</option>
-                                    </select>
-                                    <input type="text" name="compHouseNo" placeholder="House No." />
-                                    <input type="text" name="compAddress" placeholder="Address" />
-                                    <input type="date" name="compBday" placeholder="Birthdate" />
-                                    <input type="text" name="compBplace" placeholder="Place of Birth" />
-                                    <input type="radio" name="compGender" value="Male" checked />Male
-                                    <input type="radio" name="compGender" value="Female" />Female
-                                    <input type="text" name="compCivStatus" placeholder="Civil Status" />
-                                    <input type="text" name="compCitizenship" placeholder="Citizenship" />
-                                    <input type="text" name="compOccup" placeholder="Occupation" />
-                                    <input type="text" name="compRelToHead" placeholder="Relationship to Household Head" />
-                                    <input type="text" name="compNumber" placeholder="Contact Number" />
-
-                                    <h4>Complain</h4>
-                                    <div id="compComplaint-div">
-                                        <input type="text" name="compComplaint" placeholder="Complaint" />
-                                        <input type="date" name="compDate" placeholder="Date" />
-                                        <input type="time" name="compTime" placeholder="Time" />
-                                        <input type="text" name="compWhere" placeholder="Where" />
-                                    </div>
-                                    <h4>Defendant Information</h4>
-                                    <div id="defInfo-div">
-                                        <div id="defInfo1-div">
-                                            <input type="button" name="addDefendant" value="Add Another Defendant" id="addDef" />
-                                            <button type="button" name="noDefInfo" value="defPic" id="noDefInfo" onclick="switchDiv(this.value)"> I Dont know any information about defendant </button>
-                                            <div>
-                                                <input type="text" name="defFullname[]" placeholder="Fullname" />
-                                                <select name="defBrgy[]">
-                                                    <option value="Poblacion Uno">Poblacion Uno</option>
-                                                    <option value="Poblacion Dos">Poblacion Dos</option>
-                                                    <option value="Poblacion Tres">Poblacion Tres</option>
-                                                </select>
-                                                <input type="text" name="defAddress[]" placeholder="Address" />
-                                                <select name="defIdentity[]">
-                                                    <option value="Resident">Resident</option>
-                                                    <option value="Official">Official</option>
-                                                </select>
-                                            </div>
-
-
-                                        </div>
-                                        <input type="submit" name="submitComplaint" value="Submit Complaint" />
-                                    </div>
-
-                                    <div id="defPic-div" style="display: none;">
-                                        Enter Picture
-                                        <button type="button" name="noDefPicture" value="defInfo" id="noDefPicture" onclick="switchDiv(this.value)"> Back </button>
-
-                                    </div>
-
-                                </form>
-                            </div>
+                            <a id="addBtn" class="add btn mx-4 mt-4" href="./service-report.page.php" data-placement="left" title="Add Hospital"><i class="fas fa-plus"></i></a>
                         </div>
                     </div>
                 </div>
-                <div id="tableContent" class="table-responsive px-4">
+                <div id="tableContent" class="table-responsive mt-3 px-4">
                     <div class="row">
                         <div class="col-md-12 align-self-center">
-                            <table class="table text-center mt-4" id="myTable" style="width: 100%">
+                            <form class="d-flex align-items-center sort">
+                                <a href="./barangay-report.page.php" class="btn btn-dark btnSort px-4 mr-1 active" name="all" value="all">All</a>
+                                <a href="./barangay-report-pending.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Pending</a>
+                                <a href="./barangay-report-completed.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Completed</a>
+                                <a href="./barangay-report-rejected.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Archive</a>
+
+                            </form>
+                            <table class="table table-hover table-bordered mt-4 text-center" id="myTable" style="width: 100%">
                                 <colgroup>
                                     <col span="1" style="width: 5%;">
                                     <col span="1" style="width: 13%;">
@@ -286,177 +116,115 @@ if (isset($_POST['submitComplaint'])) {
                                         <th onclick="sortTable(3)" scope="col">Status</th>
                                         <th scope="col">Picture</th>
                                         <th scope="col">Date</th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
+
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     <?php
-                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE complaint_type = 'report' AND case_status ='Pending'";
+                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE complaint_type = 'report' AND where_to = '$barangayName'";
                                     $showComplaintQuery = $con->query($showComplaintSql);
                                     foreach ($showComplaintQuery as $row) {
                                         $complaintId = $row['id'];
                                         $complaintRefNo = $row['case_ref_no'];
-                                        $complainantId = $row['comp_rbi_no'];
                                         $complaint = $row['complaint'];
                                         $complaintStatus = $row['case_status'];
                                         $complaintPic = $row['incident_pic'];
                                         $complaintDateSubmit = $row['date_submit'];
 
-                                        $showComplainantBrgy = "SELECT * FROM rbi WHERE id = '$complainantId'";
-                                        $showComplainantBrgyQue = $con->query($showComplainantBrgy);
-                                        foreach ($showComplainantBrgyQue as $row1) {
-                                            $complainantBrgy = $row1['brgy'];
-                                            $complainantFullname = $row1['first_name'] . ' ' . $row1['middle_name'] . ' ' . $row1['last_name'];
 
-                                            if ($complainantBrgy == $barangayName) {
                                     ?>
-                                                <tr>
-                                                    <td><?php echo $complaintId ?> </td>
-                                                    <td><?php echo $complaintRefNo ?> </td>
-                                                    <td><?php echo $complainantFullname ?> </td>
-                                                    <td>
-                                                        <?php
-                                                        $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
-                                                        $getDefendantQuery = $con->query($getDefendant);
-                                                        foreach ($getDefendantQuery as $row2) {
-                                                            $defFullname = $row2['full_name'];
+                                        <tr>
+                                            <td><?php echo $complaintId ?> </td>
+                                            <td class="font-weight-bold"><?php echo $complaintRefNo ?> </td>
+                                            <td>
+                                                <?php
+                                                $getComplainant = "SELECT * FROM complainant WHERE case_ref_no = '$complaintRefNo'";
+                                                $getComplainantQuery = $con->query($getComplainant);
+                                                foreach ($getComplainantQuery as $row2) {
+                                                    $compId = $row2['comp_id'];
 
-                                                            echo $defFullname;
+                                                    $getComplainant1 = "SELECT * FROM rbi WHERE id = '$compId'";
+                                                    $getComplainantQuery1 = $con->query($getComplainant1);
+                                                    foreach ($getComplainantQuery1 as $row3) {
+                                                        $rbiFname = $row3['full_name'];
+                                                        $rbiHouseNo = $row3['house_no'];
+                                                        $rbiBrgy = $row3['brgy'];
+                                                        $rbiPurok = $row3['purok'];
+                                                        $rbiAddress = $row3['comp_address'];
+                                                        $rbiBday = $row3['birth_date'];
+                                                        $rbiBplace = $row3['birth_place'];
+                                                        $rbiGender = $row3['gender'];
+                                                        $rbiCivStatus = $row3['civil_status'];
+                                                        $rbiCitizenship = $row3['citizenship'];
+                                                        $rbiOccup = $row3['occupation'];
+                                                        $rbiRelToHead = $row3['relationship'];
+                                                        $rbiContactNumber = $row3['contact_no'];
+                                                        $rbiValiId = $row3['valid_id'];
 
-                                                        ?>
-                                                            <br>
-                                                        <?php } ?>
 
-                                                    </td>
-                                                    <td><?php echo $complaint ?></td>
-                                                    <td><?php echo $complaintStatus ?></td>
-                                                    <td><?php echo $complaintPic ?></td>
-                                                    <td><?php echo $complaintDateSubmit ?></td>
-                                                    <td><button><i class="fas fa-check"></i></button></td>
-                                                    <td><button><i class="fas fa-trash"></i></button></td>
-                                                    <td><button><i class="fas fa-ellipsis-h"></i></button></td>
-                                                </tr>
+                                                ?>
+                                                        <a href="#" tabindex="0" role="button" data-html="true" data-toggle="popover" data-trigger="hover" data-content='<div class="popoverContent"></div><div class="row"><div class="col-md-4"><img src="../assets/<?php echo $rbiValiId ?>" alt="..." class="float-left img-fluid"></div><div class="col-md-8"><h5><?php echo $rbiFname ?></h5><p><?php echo $rbiAddress ?></p><p><?php echo $rbiBday ?></p><p><?php echo $rbiBplace ?></p><p><?php echo $rbiGender ?></p><p><?php echo $rbiContactNumber ?></p></div></div>'><?php echo $rbiFname ?> </a>
+                                                        <br><small class='small'>(<?php echo $rbiBrgy ?>)</small>
+                                                        <br>
+                                                <?php }
+                                                } ?>
+                                            </td>
+                                            <td>
+                                                <?php
+
+                                                $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
+                                                $getDefCountPrep = $con->prepare($getDefendant);
+                                                $getDefCountPrep->execute();
+                                                $getDefCount = $getDefCountPrep->rowCount();
+                                                if ($getDefCount > 0) {
+                                                    $getDefendantQuery = $con->query($getDefendant);
+                                                    foreach ($getDefendantQuery as $row2) {
+                                                        $defFullname = $row2['full_name'];
+                                                        echo $defFullname;
+
+
+
+                                                ?>
+                                                        <br>
+                                                <?php }
+                                                } else {
+                                                    echo "--";
+                                                } ?>
+
+                                            </td>
+                                            <td><?php echo $complaint ?></td>
+                                            <td><span style="padding: 10px 10px; border-radius:4px; background-color: <?php
+                                                                                                                        if ($complaintStatus == "Pending") {
+                                                                                                                            echo "#bdffc3";
+                                                                                                                        } elseif ($complaintStatus == "Completed") {
+                                                                                                                            echo "#ffe1bd";
+                                                                                                                        } elseif ($complaintStatus == "Rejected") {
+                                                                                                                            echo "#ffbdbd";
+                                                                                                                        }
+                                                                                                                        ?>"><?php echo $complaintStatus ?></span></td>
+
+                                            <td>
+                                                <?php
+                                                if ($complaintPic == "none") {
+                                                    echo "--";
+                                                } else {
+                                                    echo '<a href="../assets/' . $complaintPic . ' ?>" target="_blank">View Picture</a>';
+                                                }
+                                                ?>
+                                            </td>
+                                            <td><?php echo $complaintDateSubmit ?></td>
+
+                                        </tr>
                                     <?php
-                                            }
-                                        }
+
                                     }
                                     ?>
                                 </tbody>
                             </table>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <section id="table-section1" class="mt-4">
-                <div id="tableNavbar1">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h1 class="mx-4 mt-4">Completed Reports</h1>
                         </div>
                     </div>
                 </div>
-                <div id="tableContent1" class="table-responsive px-4">
-                    <div class="row">
-                        <div class="col-md-12 align-self-center">
-                            <table class="table text-center mt-4" id="myTable" style="width: 100%">
-                                <colgroup>
-                                    <col span="1" style="width: 5%;">
-                                    <col span="1" style="width: 13%;">
-                                    <col span="1" style="width: 13%;">
-                                    <col span="1" style="width: 13%;">
-                                    <col span="1" style="width: 30%;">
-                                    <col span="1" style="width: 8%;">
-                                    <col span="1" style="width: 7%;">
-                                    <col span="1" style="width: 7%;">
-                                    <col span="1" style="width: 2%;">
-                                    <col span="1" style="width: 2%;">
-                                    <col span="1" style="width: 2%;">
-                                </colgroup>
-                                <thead class="">
-                                    <tr>
-                                        <th onclick="sortTable(0)">ID <i class="fas fa-sort"></i></th>
-                                        <th onclick="sortTable(1)" scope="col">Reference Numbers <i class="fas fa-sort"></i></th>
-                                        <th onclick="sortTable(2)" scope="col">Complainant <i class="fas fa-sort"></i></th>
-                                        <th scope="col">Defendant</th>
-                                        <th scope="col">Complaint</th>
-                                        <th onclick="sortTable(3)" scope="col">Status</th>
-                                        <th scope="col">Picture</th>
-                                        <th scope="col">Date</th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <?php
-                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE complaint_type = 'report' AND case_status ='Completed'";
-                                    $showComplaintQuery = $con->query($showComplaintSql);
-                                    foreach ($showComplaintQuery as $row) {
-                                        $complaintId = $row['id'];
-                                        $complaintRefNo = $row['case_ref_no'];
-                                        $complainantId = $row['comp_rbi_no'];
-                                        $complaint = $row['complaint'];
-                                        $complaintStatus = $row['case_status'];
-                                        $complaintPic = $row['incident_pic'];
-                                        $complaintDateSubmit = $row['date_submit'];
-
-                                        $showComplainantBrgy = "SELECT * FROM rbi WHERE id = '$complainantId'";
-                                        $showComplainantBrgyQue = $con->query($showComplainantBrgy);
-                                        foreach ($showComplainantBrgyQue as $row1) {
-                                            $complainantBrgy = $row1['brgy'];
-                                            $complainantFullname = $row1['first_name'] . ' ' . $row1['middle_name'] . ' ' . $row1['last_name'];
-
-                                            if ($complainantBrgy == $barangayName) {
-                                    ?>
-                                                <tr>
-                                                    <td><?php echo $complaintId ?> </td>
-                                                    <td><?php echo $complaintRefNo ?> </td>
-                                                    <td><?php echo $complainantFullname ?> </td>
-                                                    <td>
-                                                        <?php
-                                                        $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
-                                                        $getDefendantQuery = $con->query($getDefendant);
-                                                        foreach ($getDefendantQuery as $row2) {
-                                                            $defFullname = $row2['full_name'];
-
-                                                            echo $defFullname;
-
-                                                        ?>
-                                                            <br>
-                                                        <?php } ?>
-
-                                                    </td>
-                                                    <td><?php echo $complaint ?></td>
-                                                    <td><?php echo $complaintStatus ?></td>
-                                                    <td><?php echo $complaintPic ?></td>
-                                                    <td><?php echo $complaintDateSubmit ?></td>
-                                                    <td><button><i class="fas fa-check"></i></button></td>
-                                                    <td><button><i class="fas fa-trash"></i></button></td>
-                                                    <td><button><i class="fas fa-ellipsis-h"></i></button></td>
-                                                </tr>
-                                    <?php
-                                            }
-                                        }
-                                    }
-                                    ?>
-                                </tbody>
-
-
-                            </table>
-
-                        </div>
-                    </div>
-
-                </div>
-
             </section>
         </div>
     </div>

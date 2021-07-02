@@ -1,24 +1,29 @@
  :root {
-     --bgColor: #ECF1F5;
-     --redAccent: #F6484A;
-     --yellowAccent: #ECDA3F;
-     --fontColor: #4C4C4C;
+     --bgcolor: white;
+     --mainAccent: #1F5493;
+     --mainDarkAccent: #102E51;
+     --mainLightAccent: #0371BC;
+     --mainLighterestAccent: #4773AA;
+     --secondDarkAccent: #FDB81D;
+     --secondAccent: #F9C641;
+     --grayAccent: #aeb0b5;
+     --fontColor: black;
  }
 
  @import url('https://fonts.googleapis.com/css?family=Raleway&family=Roboto&display=swap');
  @font-face {
      font-family: Poppins-Medium;
-     src: url(../fonts/Poppins-Medium.ttf);
+     src: url(../fonts/SFUIDisplay-Semibold.otf);
  }
 
  @font-face {
      font-family: Poppins;
-     src: url(../fonts/Poppins-Regular.ttf);
+     src: url(../fonts/SFUIDisplay-Regular.otf);
  }
 
  @font-face {
      font-family: Poppins-Light;
-     src: url(../fonts/Poppins-Light.ttf);
+     src: url(../fonts/SFUIDisplay-Light.ttf);
  }
 
  @font-face {
@@ -39,7 +44,10 @@
  }
 
  body {
-     background-color: var(--bgColor);
+     background: rgb(188, 217, 255);
+     background: linear-gradient(298deg, rgba(188, 217, 255, 1) 8%, rgba(225, 238, 255, 1) 47%, rgba(238, 245, 255, 1) 88%, rgba(249, 251, 255, 1) 100%);
+     background-repeat: no-repeat;
+     background-attachment: fixed;
      font-family: 'Poppins';
  }
 
@@ -48,7 +56,7 @@
  /* for toggle behavior */
 
  #sidebar.active {
-     margin-left: -17rem;
+     margin-left: -18rem;
  }
 
  #content.active {
@@ -58,15 +66,15 @@
 
  .vertical-nav {
      min-width: 17rem;
-     width: 16.5rem;
+     width: 18rem;
      height: 100vh;
      position: fixed;
      top: 0;
      left: 0;
      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
      transition: all 0.4s;
-     background: rgb(232, 64, 116);
-     background: linear-gradient(240deg, rgba(232, 64, 116, 1) 0%, rgba(245, 71, 73, 1) 70%);
+     background-color: var(--mainDarkAccent);
+     z-index: 9999;
  }
 
  .sidebar-footer {
@@ -99,7 +107,7 @@
 
  .vertical-nav small {
      font-weight: bold;
-     color: #444444;
+     color: #a3a3a3;
  }
 
  .vertical-nav a {
@@ -112,7 +120,7 @@
  }
 
  .vertical-nav .nav-item a:hover {
-     background: var(--yellowAccent);
+     background: var(--secondAccent);
      transition: all linear 0.5s;
  }
 
@@ -127,7 +135,7 @@
  }
 
  .vertical-nav .nav-item .active {
-     background: var(--yellowAccent);
+     background: var(--secondAccent);
      transition: all linear 0.5s;
  }
 
@@ -142,12 +150,13 @@
  }
 
  .topnav .page-title {
+     font-family: 'Poppins-Medium';
      color: black;
      font-size: 25px;
  }
 
  .topnav .fas {
-     color: var(--redAccent);
+     color: var(--mainAccent);
  }
 
  .alert {
@@ -169,10 +178,15 @@
      transition: all 0.4s;
  }
 
+ .page-content .navbar-nav #name {
+     color: black;
+     font-weight: bold;
+ }
+
  /*SECTION LIST COUNT*/
 
  #list-count .card {
-     background-color: #F3F6FB;
+     background-color: white;
      padding-top: 10px;
      padding-bottom: 10px;
      -webkit-border-radius: 30px;
@@ -184,7 +198,7 @@
      border-radius: 50%;
      padding: 20px;
      color: white;
-     background-color: var(--redAccent);
+     background-color: var(--mainDarkAccent);
  }
 
  #list-count .card h5 {
@@ -203,11 +217,23 @@
  /*TABLE CONTENT */
 
  #table-section {
-     background-color: #F3F6FB;
+     background-color: white;
      border: 1px solid #D4D7DC;
      -webkit-border-radius: 30px;
      -moz-border-radius: 30px;
      border-radius: 30px;
+ }
+
+ #table-section .add {
+     background-color: var(--mainAccent);
+     color: white;
+     border-radius: 50%;
+ }
+
+ #table-section .add:hover {
+     background-color: transparent;
+     border: 1px solid var(--mainAccent);
+     color: var(--mainAccent);
  }
 
  #tableNavbar h1 {
@@ -218,13 +244,27 @@
      vertical-align: middle;
  }
 
- #table-section .table>thead>tr>th {
-     border-top: none;
+ #table-section .small {
+     font-weight: bold;
+     color: var(--mainLightAccent);
+ }
+
+ /* #table-section .table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {
+     background-color: #e8edf4;
+ } */
+
+ #table-section .table-hover tbody tr:hover td, #table-section .table-hover tbody tr:hover th {
+     background-color: #f9fbff;
  }
 
  #table-section .table thead {
      font-size: 11px;
      color: #545454;
+     background-color: #f9fbff;
+ }
+
+ #table-section .table a {
+     color: var(--mainAccent);
  }
 
  #table-section .table tbody {
@@ -236,72 +276,243 @@
  #table-section .sort .btnSort {
      background-color: transparent;
      color: black;
-     border-color: var(--redAccent);
+     border-color: var(--mainAccent);
      border-radius: 40px;
      font-size: 13px;
      box-shadow: none;
  }
 
  #table-section .sort .btnSort:hover {
-     background-color: var(--redAccent);
+     background-color: var(--mainAccent);
      color: white;
  }
 
  #table-section .sort .active {
-     background-color: var(--redAccent);
+     background-color: var(--mainAccent);
      color: white;
  }
 
- /*  */
+ #table-section .cC {
+     background-color: #e8edf4;
+     padding: 10px 15px;
+     margin-top: 30px;
+ }
 
- #table-section1 {
-     background-color: #F3F6FB;
-     border: 1px solid #D4D7DC;
-     -webkit-border-radius: 30px;
-     -moz-border-radius: 30px;
+ #table-section .hiddenRow {
+     padding: 0 !important;
+ }
+
+ #table-section .submit1 {
+     background-color: var(--secondDarkAccent);
+     color: black;
+     border-radius: 0;
+     border-color: var(--secondDarkAccent);
+ }
+
+ #table-section .submit1:hover {
+     background-color: var(--secondAccent);
+ }
+
+ #table-section .titleComplaint {
+     background-color: var(--mainDarkAccent);
+     padding: 15px 15px;
+     font-size: 18px;
+     color: white;
+     text-transform: uppercase;
+     font-family: 'Raleway', sans-serif;
+     font-weight: bold;
+     margin-bottom: 20px;
+ }
+
+ #table-section #tableNavbar img {
+     max-height: 300px;
+ }
+
+ #table-section #tableNavbar h2 {
+     margin-top: 10px;
+     font-family: 'Poppins-Medium';
+     font-size: 25px;
+ }
+
+ #table-section #tableNavbar .isVerify {
+     border-radius: 30px;
+     margin-top: 10px;
+     padding: 10px 0;
+     text-align: center;
+     width: 200px;
+     font-size: 16px;
+ }
+
+ #table-section #tableNavbar .count {
+     color: white
+ }
+
+ .modal .complaintDiv {
+     padding: 30px;
+     background-color: rgba(225, 238, 255, 1);
+ }
+
+ .modal .modal-footer .btnAccept {
+     background-color: var(--mainDarkAccent);
+     color: white;
+ }
+
+ .modal .modal-footer .btnAccept:hover {
+     background-color: var(--mainAccent);
+ }
+
+ .bio-row {
+     width: 50%;
+     float: left;
+     margin-bottom: 10px;
+     padding: 0 15px;
+ }
+
+ .bio-row p span {
+     font-weight: bolder;
+     width: 200px;
+     display: inline-block;
+ }
+
+ .bio-graph-heading {
+     background: var(--mainAccent);
+     color: #fff;
+     text-align: center;
+     padding: 20px 110px;
+     border-radius: 4px 4px 0 0;
+     -webkit-border-radius: 4px 4px 0 0;
+     font-size: 20px;
+     font-family: 'Poppins-Medium';
+ }
+
+ .modal .modal-dialog-aside {
+     width: 350px;
+     max-width: 80%;
+     height: 100%;
+     margin: 0;
+     transform: translate(0);
+     transition: transform .2s;
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-header, .modal .modal-dialog-aside .modal-content .modal-footer {
+     background-color: var(--mainDarkAccent);
+     border: none;
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-header .modal-title {
+     font-family: 'Raleway', sans-serif;
+     color: white;
+ }
+
+ .modal .modal-dialog-aside .modal-content {
+     height: inherit;
+     border: 0;
+     border-radius: 0;
+     background-color: white;
+ }
+
+ .modal .modal-dialog-aside .modal-content label {
+     color: var(--light-gray);
+     font-family: 'Roboto', sans-serif;
+     font-size: 15px;
+     font-weight: bold;
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-body {
+     overflow-y: auto
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-body .editable {
+     color: black;
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-body .editable:hover, .modal .modal-dialog-aside .modal-content .modal-body .editable:focus {
+     border-color: var(--mainAccent);
+ }
+
+ .modal .modal-dialog-aside .modal-content .modal-body input {
      border-radius: 30px;
  }
 
- #tableNavbar1 h1 {
-     font-size: 20px;
+ .modal .modal-dialog-aside .modal-content .modal-footer .btnsave {
+     background-color: var(--secondDarkAccent);
+     color: black
  }
 
- #table-section1 tbody tr th, #table-section tbody tr td {
-     vertical-align: middle;
+ .modal .modal-dialog-aside .modal-content .modal-footer .btnsave:hover {
+     box-shadow: inset 0 1px 1px var(--secondAccent), 0 0 8px var(--secondAccent);
  }
 
- #table-section1 .table>thead>tr>th {
-     border-top: none;
+ .modal.fixed-left .modal-dialog-aside {
+     margin-left: auto;
+     transform: translateX(100%);
  }
 
- #table-section1 .table thead {
-     font-size: 11px;
-     color: #545454;
+ .modal.fixed-right .modal-dialog-aside {
+     margin-right: auto;
+     transform: translateX(-100%);
  }
 
- #table-section1 .table tbody {
+ .modal.show .modal-dialog-aside {
+     transform: translateX(0);
+ }
+
+ /* POPOVER */
+
+ .popover {
+     max-width: 600px !important;
+     background-color: #e8edf4;
+     padding: 1.5rem;
+     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+ }
+
+ /* SLIDERRRRRRRRRRRRRRRRRRRRRRRRRR */
+
+ .main .container1 .glider-contain .glider .card {
+     margin-right: 0.5rem;
+     background: white;
+     border: none;
+     outline: none;
+     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.10);
+     border-radius: 2px;
+     width: 100px;
+ }
+
+ .main .container1 .glider-contain .glider .card-header {
+     background-color: var(--secondAccent);
+     color: black;
+     ;
+ }
+
+ .main .container1 .glider-contain .glider .card .card-body p{
      font-size: 14px;
-     color: black;
-     font-family: 'Poppins';
+ }
+ 
+ .main .container1 .glider-contain .glider-prev, .main .container1 .glider-contain .glider-next {
+     font-size: 1.5rem;
+     background: var(--mainLighterestAccent);
+     color: #ffffff;
+     margin-top: 1rem;
+     width: 3rem;
+     height: 3rem;
+     line-height: 3rem;
+     border-radius: 50%;
  }
 
- #table-section1 .sort .btnSort {
-     background-color: transparent;
-     color: black;
-     border-color: var(--redAccent);
-     border-radius: 40px;
-     font-size: 13px;
-     box-shadow: none;
+ .main .container1 .glider-contain .glider-prev .fas, .main .container1 .glider-contain .glider-next .fas {
+     margin-left: 1rem;
  }
 
- #table-section1 .sort .btnSort:hover {
-     background-color: var(--redAccent);
-     color: white;
+ @media only screen and (max-width: 768px) {
+     .main .glider-contain .glider-prev, .main .glider-contain .glider-next {
+         display: none;
+     }
  }
 
- #table-section1 .sort .active {
-     background-color: var(--redAccent);
-     color: white;
+ @media only screen and (min-width: 769px) {
+     .main .glider-contain .dots {
+         display: none;
+     }
  }
 
  @keyframes transitionIn {

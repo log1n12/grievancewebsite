@@ -2,14 +2,29 @@
 session_start();
 require_once './database/config.php';
 require_once './database/barangay-admin.check.php';
+$titleHeader = "Complaint";
 $message = "";
 
-if (isset($_GET['toPaymentBtn'])) {
+if (isset($_POST['toPaymentBtn'])) {
+    $id = $_POST['id'];
+    $kp = $_POST['compKp'];
+    $unreadsql = "UPDATE complaint_case SET case_status = :case_status, nod = :nod WHERE id = :id";
+    $unreadstmt = $con->prepare($unreadsql);
+    if ($unreadstmt->execute([
+        ':case_status' => "Payment",
+        'nod' => $kp,
+        ':id' => $id
+
+    ])) {
+        $message = "Updated";
+    }
+}
+if (isset($_GET['toRejectedBtn'])) {
     $id = $_GET['id'];
     $unreadsql = "UPDATE complaint_case SET case_status = :case_status WHERE id = :id";
     $unreadstmt = $con->prepare($unreadsql);
     if ($unreadstmt->execute([
-        ':case_status' => "Payment",
+        ':case_status' => "Rejected",
         ':id' => $id
 
     ])) {
@@ -26,11 +41,15 @@ if (isset($_GET['toPaymentBtn'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
+
+
     <link rel="stylesheet" type="text/css" href="../css/barangay-admin.style.css">
+
     <title>Document</title>
 </head>
 
@@ -101,7 +120,7 @@ if (isset($_GET['toPaymentBtn'])) {
                             <h1 class="mx-4 mt-4">List of Complaints</h1>
                         </div>
                         <div class="col-md-6 text-right align-self-center">
-                            <button id="addBtn" class="add btn mx-4 mt-4" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" data-placement="left" title="Add Hospital"><i class="fas fa-plus"></i></button>
+                            <a id="addBtn" class="add btn mx-4 mt-4" href="./service-complaint.page.php" data-placement="left" title="Add Hospital"><i class="fas fa-plus"></i></a>
                         </div>
                     </div>
                     <div class="collapse" id="collapseExample">
@@ -160,23 +179,22 @@ if (isset($_GET['toPaymentBtn'])) {
                     <div class="row">
                         <div class="col-md-12 align-self-center">
                             <form class="d-flex align-items-center sort">
-                                <a href="./barangay-complaint.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">All</a>
-                                <a href="./barangay-complaint-pending.page.php" class="btn btn-dark btnSort px-4 mr-1 active" name="all" value="all">Pending</a>
-                                <a href="./barangay-complaint-confirm.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Payment</a>
-                                <a href="./barangay-complaint-ongoing.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Ongoing</a>
-                                <a href="./barangay-complaint-completed.page.php" class="btn btn-dark btnSort px-4 mr-1" name="all" value="all">Completed</a>
+                                <a href="./barangay-complaint.page.php" class="btn btn-dark btnSort px-4 mr-1">All</a>
+                                <a href="./barangay-complaint-pending.page.php" class="btn btn-dark btnSort px-4 mr-1 active">Pending</a>
+                                <a href="./barangay-complaint-confirm.page.php" class="btn btn-dark btnSort px-4 mr-1">Payment</a>
+                                <a href="./barangay-complaint-ongoing.page.php" class="btn btn-dark btnSort px-4 mr-1">Ongoing</a>
+                                <a href="./barangay-complaint-completed.page.php" class="btn btn-dark btnSort px-4 mr-1">Completed</a>
+                                <a href="./barangay-complaint-rejected.page.php" class="btn btn-dark btnSort px-4 mr-1">Rejected</a>
                             </form>
-                            <table class="table text-center mt-4" id="myTable" style="width: 100%">
+                            <table class="table table-hover table-bordered mt-4 text-center" id="myTable" style="width: 100%">
                                 <colgroup>
                                     <col span="1" style="width: 5%;">
                                     <col span="1" style="width: 13%;">
                                     <col span="1" style="width: 13%;">
                                     <col span="1" style="width: 13%;">
-                                    <col span="1" style="width: 30%;">
-                                    <col span="1" style="width: 8%;">
-                                    <col span="1" style="width: 7%;">
-                                    <col span="1" style="width: 7%;">
-                                    <col span="1" style="width: 2%;">
+                                    <col span="1" style="width: 36%;">
+                                    <col span="1" style="width: 9%;">
+                                    <col span="1" style="width: 9%;">
                                     <col span="1" style="width: 2%;">
                                     <col span="1" style="width: 2%;">
                                 </colgroup>
@@ -187,73 +205,175 @@ if (isset($_GET['toPaymentBtn'])) {
                                         <th onclick="sortTable(2)" scope="col">Complainant <i class="fas fa-sort"></i></th>
                                         <th scope="col">Defendant</th>
                                         <th scope="col">Complaint</th>
-                                        <th onclick="sortTable(3)" scope="col">Status</th>
                                         <th scope="col">Picture</th>
                                         <th scope="col">Date</th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
-                                        <th scope="col"></th>
+                                        <th scope="col">Accept</th>
+                                        <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
                                     <?php
-                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE defendant_type = 'Resident' AND case_status ='Pending'";
+                                    $showComplaintSql = "SELECT * FROM complaint_case WHERE complaint_type = 'complaint' AND case_status = 'Pending' AND where_to = '$barangayName'";
                                     $showComplaintQuery = $con->query($showComplaintSql);
                                     foreach ($showComplaintQuery as $row) {
                                         $complaintId = $row['id'];
                                         $complaintRefNo = $row['case_ref_no'];
-                                        $complainantId = $row['comp_rbi_no'];
                                         $complaint = $row['complaint'];
                                         $complaintStatus = $row['case_status'];
                                         $complaintPic = $row['incident_pic'];
                                         $complaintDateSubmit = $row['date_submit'];
-
-                                        $showComplainantBrgy = "SELECT * FROM rbi WHERE id = '$complainantId'";
-                                        $showComplainantBrgyQue = $con->query($showComplainantBrgy);
-                                        foreach ($showComplainantBrgyQue as $row1) {
-                                            $complainantBrgy = $row1['brgy'];
-                                            $complainantFullname = $row1['first_name'] . ' ' . $row1['middle_name'] . ' ' . $row1['last_name'];
-
-                                            if ($complainantBrgy == $barangayName) {
                                     ?>
-                                                <form method="get">
-                                                    <tr>
-                                                        <td><?php echo $complaintId ?><input type="hidden" name="id" value="<?php echo $complaintId ?>" /> </td>
-                                                        <td><?php echo $complaintRefNo ?> </td>
-                                                        <td><?php echo $complainantFullname ?> </td>
-                                                        <td>
-                                                            <?php
-                                                            $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
-                                                            $getDefendantQuery = $con->query($getDefendant);
-                                                            foreach ($getDefendantQuery as $row2) {
-                                                                $defFullname = $row2['full_name'];
 
-                                                                echo $defFullname;
+                                        <form method="get">
+                                            <tr>
+                                                <td><?php echo $complaintId ?><input type="hidden" name="id" value="<?php echo $complaintId ?>" /> </td>
+                                                <td class="font-weight-bold"><?php echo $complaintRefNo ?> </td>
+                                                <td>
+                                                    <?php
+                                                    $getComplainant = "SELECT * FROM complainant WHERE case_ref_no = '$complaintRefNo'";
+                                                    $getComplainantQuery = $con->query($getComplainant);
+                                                    foreach ($getComplainantQuery as $row2) {
+                                                        $compId = $row2['comp_id'];
 
-                                                            ?>
-                                                                <br>
-                                                            <?php } ?>
+                                                        $getComplainant1 = "SELECT * FROM rbi WHERE id = '$compId'";
+                                                        $getComplainantQuery1 = $con->query($getComplainant1);
+                                                        foreach ($getComplainantQuery1 as $row3) {
+                                                            $rbiFname = $row3['full_name'];
+                                                            $rbiHouseNo = $row3['house_no'];
+                                                            $rbiBrgy = $row3['brgy'];
+                                                            $rbiPurok = $row3['purok'];
+                                                            $rbiAddress = $row3['comp_address'];
+                                                            $rbiBday = $row3['birth_date'];
+                                                            $rbiBplace = $row3['birth_place'];
+                                                            $rbiGender = $row3['gender'];
+                                                            $rbiCivStatus = $row3['civil_status'];
+                                                            $rbiCitizenship = $row3['citizenship'];
+                                                            $rbiOccup = $row3['occupation'];
+                                                            $rbiRelToHead = $row3['relationship'];
+                                                            $rbiContactNumber = $row3['contact_no'];
+                                                            $rbiValiId = $row3['valid_id'];
 
-                                                        </td>
-                                                        <td><?php echo $complaint ?></td>
-                                                        <td><?php echo $complaintStatus ?></td>
-                                                        <td><?php echo $complaintPic ?></td>
-                                                        <td><?php echo $complaintDateSubmit ?></td>
-                                                        <td><button type="submit" name="toPaymentBtn"><i class="fas fa-check"></i></button></td>
-                                                        <td><button><i class="fas fa-trash"></i></button></td>
-                                                        <td><button><i class="fas fa-ellipsis-h"></i></button></td>
-                                                    </tr>
-                                                </form>
+
+                                                    ?>
+                                                            <a href="#" tabindex="0" role="button" data-html="true" data-toggle="popover" data-trigger="hover" data-content='<div class="popoverContent"></div><div class="row"><div class="col-md-4"><img src="../assets/<?php echo $rbiValiId ?>" alt="..." class="float-left img-fluid"></div><div class="col-md-8"><h5><?php echo $rbiFname ?></h5><p><?php echo $rbiAddress ?></p><p><?php echo $rbiBday ?></p><p><?php echo $rbiBplace ?></p><p><?php echo $rbiGender ?></p><p><?php echo $rbiContactNumber ?></p></div></div>'><?php echo $rbiFname ?> </a>
+                                                            <br><small class='small'>(<?php echo $rbiBrgy ?>)</small>
+                                                            <br>
+                                                    <?php }
+                                                    } ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $getDefendant = "SELECT * FROM defendant WHERE case_ref_no = '$complaintRefNo'";
+                                                    $getDefendantQuery = $con->query($getDefendant);
+                                                    foreach ($getDefendantQuery as $row2) {
+                                                        $defFullname = $row2['full_name'];
+                                                        $defPosition = $row2['position'];
+
+                                                        echo $defFullname . " <br><small class='small'>(" . $defPosition . ")</small>";
+                                                    ?>
+                                                        <br>
+                                                    <?php } ?>
+
+                                                </td>
+                                                <td><?php echo $complaint ?></td>
+                                                <td><?php
+                                                    if ($complaintPic == "none") {
+                                                        echo "--";
+                                                    } else {
+                                                        echo '<a href="../assets/' . $complaintPic . ' ?>" target="_blank">View Picture</a>';
+                                                    }
+                                                    ?></td>
+                                                <td><?php echo $complaintDateSubmit ?></td>
+                                                <td><button class="add btn acceptBtn" type="button"><i class="fas fa-check"></i></button></td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="add btn" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-h"></i>
+                                                        </button>
+                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                            <button class="dropdown-item" type="submit" name="toRejectedBtn">Reject</button>
+                                                            <button class="dropdown-item" type="submit">Endorse</button>
+                                                            <button class="dropdown-item" type="submit">Add Defendant</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        </form>
                                     <?php
-                                            }
-                                        }
+
                                     }
                                     ?>
                                 </tbody>
 
 
                             </table>
+                            <!-- Modal -->
+                            <div class="modal fade bd-example-modal-lg" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="exampleModalLongTitle">Katarungang Pambarangay</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                            <form method="post">
+                                                <input type="hidden" id="complaintId" name="id" />
+                                                <p class="mt-3 mb-0"><span class="font-weight-bold">Reference Number:</span> <span id="refNumber"></span></p>
+                                                <p class="font-weight-bold mb-0">Complaint: <span id="compComplaint" class="font-weight-light"></span></p>
+                                                <div class="complaintDiv mt-2">
+                                                    <h6 class="font-weight-bolder">Choose what kind of Katarungang Pambarangay this case belongs</h6>
+                                                    <select class="form-control" name="compKp">
+                                                        <optgroup label="Civil Cases">
+                                                            <?php
+                                                            $getKP = "SELECT * FROM kplist WHERE kp_type = 'Civil'";
+                                                            $getKPQuery = $con->query($getKP);
+                                                            foreach ($getKPQuery as $row) {
+                                                                $kpId = $row['id'];
+                                                                $kpName = $row['kp_name'];
+                                                                $kpEngName = $row['kp_name_eng'];
+                                                                $kpType = $row['kp_type'];
+                                                            ?>
+
+                                                                <option value="<?= $kpId ?>"><?php echo $kpName . "</span> (" . $kpEngName . ")"; ?></option>
+                                                            <?php
+                                                            }
+                                                            ?>
+                                                            </optgroup">
+                                                        <optgroup label="Criminal Cases">
+                                                            <?php
+                                                            $getKP = "SELECT * FROM kplist WHERE kp_type = 'Criminal'";
+                                                            $getKPQuery = $con->query($getKP);
+                                                            foreach ($getKPQuery as $row) {
+                                                                $kpId = $row['id'];
+                                                                $kpName = $row['kp_name'];
+                                                                $kpEngName = $row['kp_name_eng'];
+                                                                $kpType = $row['kp_type'];
+                                                            ?>
+
+                                                                <option value="<?= $kpId ?>"><?php echo $kpName . "</span> (" . $kpEngName . ")"; ?></option>
+                                                            <?php
+                                                            }
+                                                            ?>
+                                                            </optgroup">
+                                                    </select>
+
+                                                </div>
+
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btnAccept" name="toPaymentBtn">Accept</button>
+                                            </form>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -270,7 +390,6 @@ if (isset($_GET['toPaymentBtn'])) {
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
-
     <script type="text/javascript">
         $(function() {
             // Sidebar toggle behavior
@@ -278,61 +397,28 @@ if (isset($_GET['toPaymentBtn'])) {
                 $('#sidebar, #content').toggleClass('active');
             });
         });
+        $(function() {
+            // Enables popover
+            $("[data-toggle=popover]").popover();
+        });
+        $(document).ready(function() {
+            $('.acceptBtn').on('click', function() {
+                $('#acceptModal').modal('show');
 
-        function sortTable(n) {
-            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-            table = document.getElementById("myTable");
-            switching = true;
-            // Set the sorting direction to ascending:
-            dir = "asc";
-            /* Make a loop that will continue until
-            no switching has been done: */
-            while (switching) {
-                // Start by saying: no switching is done:
-                switching = false;
-                rows = table.rows;
-                /* Loop through all table rows (except the
-                first, which contains table headers): */
-                for (i = 1; i < (rows.length - 1); i++) {
-                    // Start by saying there should be no switching:
-                    shouldSwitch = false;
-                    /* Get the two elements you want to compare,
-                    one from current row and one from the next: */
-                    x = rows[i].getElementsByTagName("TD")[n];
-                    y = rows[i + 1].getElementsByTagName("TD")[n];
-                    /* Check if the two rows should switch place,
-                    based on the direction, asc or desc: */
-                    if (dir == "asc") {
-                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                            // If so, mark as a switch and break the loop:
-                            shouldSwitch = true;
-                            break;
-                        }
-                    } else if (dir == "desc") {
-                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                            // If so, mark as a switch and break the loop:
-                            shouldSwitch = true;
-                            break;
-                        }
-                    }
-                }
-                if (shouldSwitch) {
-                    /* If a switch has been marked, make the switch
-                    and mark that a switch has been done: */
-                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                    switching = true;
-                    // Each time a switch is done, increase this count by 1:
-                    switchcount++;
-                } else {
-                    /* If no switching has been done AND the direction is "asc",
-                    set the direction to "desc" and run the while loop again. */
-                    if (switchcount == 0 && dir == "asc") {
-                        dir = "desc";
-                        switching = true;
-                    }
-                }
-            }
-        }
+                $tr = $(this).closest('tr');
+
+                var tddata = $tr.children("td").map(function() {
+                    return $(this).text();
+
+                }).get();
+
+                $('#complaintId').val(tddata[0]);
+                $('#refNumber').text(tddata[1]);
+                $('#compComplaint').text(tddata[4]);
+
+
+            });
+        });
     </script>
 </body>
 

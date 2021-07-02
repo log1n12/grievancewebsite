@@ -1,0 +1,303 @@
+:root {
+    --bgcolor: white;
+    --mainAccent: #1F5493;
+    --mainDarkAccent: #102E51;
+    --mainLightAccent: #0371BC;
+    --mainLighterestAccent: #4773AA;
+    --secondDarkAccent: #FDB81D;
+    --secondAccent: #F9C641;
+    --grayAccent: #aeb0b5;
+    --fontColor: black;
+}
+
+/* Font Styles*/
+
+@import url('https://fonts.googleapis.com/css?family=Raleway&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
+@font-face {
+    font-family: Mansalva;
+    src: url(../fonts/Mansalva-Regular.ttf);
+}
+
+* {
+    /* border: 1px solid red; */
+    border-radius: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.transparent {
+    background-color: transparent !important;
+}
+
+body {
+    background-color: var(--d-gray);
+    color: var(--light-gray);
+}
+
+/*============ NAVBAR =============*/
+
+.scrolled {
+    background-color: black;
+    transition: transform .8s ease;
+    box-shadow: 3px 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.current {
+    color: var(--light-blue);
+}
+
+.padding {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.navbar {
+    transition: transform 1s ease;
+}
+
+.navbar .navbar-brand {
+    font-family: 'Mansalva', cursive;
+    color: white;
+    font-size: 35px;
+}
+
+.navbar .navbar-brand:hover {
+    color: white;
+}
+
+.navbar .navbar-nav .nav-item {
+    color: white;
+    position: relative;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.navbar .navbar-nav .nav-item:hover {
+    color: var(--secondAccent);
+}
+
+.hide {
+    transform: translateY(-150px);
+    transition: transform .8s ease;
+}
+
+.navbar.scrolled>.collapse .navbar-nav .nav-item {
+    color: black;
+}
+
+.navbar.scrolled>.collapse .navbar-nav .nav-item:hover {
+    color: red;
+}
+
+/*--------TOP BANNER--------*/
+
+#topBanner {
+    margin: auto;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .5)), url('../assets/bb.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 60vh;
+    background-attachment: fixed;
+    background-position: center center;
+    position: relative;
+}
+
+#topBanner .main-content {
+    height: 60vh;
+}
+
+#topBanner .main-content h1 {
+    font-family: 'Raleway', sans-serif;
+    color: white;
+    font-size: 85px;
+    font-weight: 800;
+}
+
+#topBanner .main-content h1 .accent {
+    color: var(--secondDarkAccent);
+}
+
+#topBanner .main-content p {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 4px;
+    word-spacing: 2px;
+}
+
+#topBanner .section-title-heading {
+    font-family: 'Julius Sans One', sans-serif;
+    font-size: 18px;
+    letter-spacing: 5px;
+    color: var(--secondAccent);
+}
+
+/*--------ABOUT--------*/
+
+#about {
+    padding: 9rem 0 14rem;
+    position: relative;
+    background-color: var(--d-gray);
+    color: var(--fontColor);
+}
+
+#about .sec-title {
+    margin-top: 5rem;
+}
+
+#about .sec-title h1 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 40px;
+}
+
+#about .sec-title p {
+    font-weight: lighter;
+}
+
+#about .section-title-heading {
+    font-family: 'Julius Sans One', sans-serif;
+    font-size: 18px;
+    letter-spacing: 12px;
+    color: var(--mainLightAccent);
+}
+
+#about .about {
+    margin-top: 80px;
+}
+
+#about .spabout {
+    padding: 2rem 0;
+    top: 0;
+    transition: all .3s linear;
+    color: white;
+}
+
+#about .spabout .fas {
+    color: var(--secondAccent);
+}
+
+#about .spabout:hover {
+    position: relative;
+    top: -10px;
+    transition: all .3s linear;
+}
+
+#about .spabout:hover h3 {
+    color: var(--secondAccent);
+}
+
+#about .spabout:hover .fas {
+    color: white;
+}
+
+#about .spabout h3 {
+    font-family: 'Julius Sans One', sans-serif;
+    text-transform: uppercase;
+    color: var(--light-blue);
+    letter-spacing: 5px;
+    font-size: 25px;
+}
+
+#about .spabout p {
+    font-size: 15px;
+    font-weight: lighter;
+}
+
+#meg {
+    background-color: #e8edf4;
+    padding-bottom: 4rem;
+}
+
+#meg .navss {
+    background-color: var(--mainAccent);
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 5rem;
+}
+
+#meg h1 {
+    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: lighter;
+}
+
+#meg .formm input, #meg .formm textarea {
+    border: 2px solid var(--mainAccent);
+    border-radius: 0;
+    color: var(--light-gray);
+}
+
+#meg .formm select option {
+    color: black;
+}
+
+#meg .formm .btnn {
+    background-color: var(--mainDarkAccent);
+    border-color: var(--mainDarkAccent);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    letter-spacing: .5px;
+    transition: all linear .5s;
+    border-radius: 0;
+}
+
+#meg .formm input::placeholder, #meg .formm textarea::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    text-align: center;
+    color: black;
+    opacity: 1;
+    /* Firefox */
+}
+
+#meg .formm .btnn:hover {
+    background-color: white;
+    color: black;
+}
+
+#meg .formm input:hover, #meg .formm textarea:hover, #meg .formm select:hover {
+    border-color: var(--light-blue);
+    box-shadow: inset 0 1px 1px var(--light-blue), 0 0 8px var(--light-blue);
+}
+
+#meg .formm input:focus, #meg .formm textarea:focus, #meg .formm select:focus {
+    border-color: var(--light-blue);
+    color: black;
+    box-shadow: inset 0 1px 1px var(--light-blue), 0 0 8px var(--light-blue);
+}
+
+/*--------FOOTER--------*/
+
+.footer {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    background-color: black;
+    color: white;
+    justify-content: center;
+    text-align: center;
+}
+
+.footer .container {}
+
+.footer h6 #year {
+    color: var(--light-blue);
+}
+
+.footer i {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.footer h1 {
+    font-family: 'Mansalva', cursive;
+}
