@@ -2,26 +2,26 @@
 
 :root {
     --bgcolor: white;
-    --mainAccent: #1F5493;
-    --mainDarkAccent: #102E51;
-    --mainLightAccent: #0371BC;
-    --mainLighterestAccent: #4773AA;
-    --secondDarkAccent: #FDB81D;
-    --secondAccent: #F9C641;
-    --grayAccent: #aeb0b5;
+    --mainAccent: #3c414A;
+    --mainDarkAccent: #2D313A;
+    --mainLightAccent: #4f545c;
+    --mainLighterestAccent: #6a707c;
+    --secondDarkAccent: #BF8C20;
+    --secondAccent: #d4a94a;
     --fontColor: black;
 }
 
 /* Font Styles*/
 
 @import url('https://fonts.googleapis.com/css?family=Raleway&family=Roboto&display=swap');
+
 @font-face {
     font-family: Mansalva;
     src: url(../fonts/Mansalva-Regular.ttf);
 }
 
 .rArrow {
-    color: var(--secondDarkAccent);
+    color: black;
 }
 
 * {
@@ -31,13 +31,12 @@
 
 body {
     margin: auto;
-    background: url('../assets/bb.jpg');
+    background: url('../assets/magdalena.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     width: 100%;
     height: 100vh;
     background-position: center center;
-    animation: transitionIn 2.5s;
 }
 
 .navbar {
@@ -64,24 +63,54 @@ body {
 }
 
 .title h1 {
-    font-family: 'Raleway', sans-serif;
-        color: var(--secondDarkAccent);
-    font-size: 150px;
+    color: white;
+    font-size: 90px;
     font-weight: 800;
 }
 
-.title p {
+.title h1 .high {
+    font-family: 'Raleway', sans-serif;
+    color: var(--secondDarkAccent);
+    font-size: 120px;
+    font-weight: 800;
+}
+
+.btn {
+    border-radius: 0;
+    border: none;
+}
+
+.title .pp {
     font-family: 'Roboto', sans-serif;
     color: white;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 400;
     letter-spacing: 2px;
 }
 
+.title .ppp {
+    color: rgb(226, 226, 226);
+    font-size: 14px;
+}
+
+.aff img {
+    max-width: 80px;
+}
+
+.forgotPass {
+    color: var(--secondAccent);
+}
+
+.forgotPass:hover {
+    color: var(--secondDarkAccent);
+}
+
 .form .input {
-    color: white;
-    border-color: var(--secondDarkAccent);
+    color: black;
+    border-color: black;
     border-radius: 0;
+    text-align: center;
+    padding: 20px 0;
 }
 
 .form .input:focus {
@@ -92,7 +121,7 @@ body {
 .form .input::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     text-align: center;
-    color: white;
+    color: black;
     opacity: 1;
     /* Firefox */
 }
@@ -103,22 +132,19 @@ body {
 }
 
 .form .submit {
-    background-color: transparent;
-    border-color: white;
     color: white;
     letter-spacing: 1px;
-    transition: all linear .5s;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 15px;
     height: 40px;
+    background-color: black;
 }
 
 .form .submit:hover {
-    background-color: white;
+    background-color: var(--secondAccent);
     color: black;
     border-color: var(--mainLightAccent);
-    transition: all 1s linear;
 }
 
 .modal .modal-dialog-aside {
@@ -194,47 +220,52 @@ body {
     transform: translateX(0);
 }
 
-@media (max-width: 768px) {
-    .title h1 {
-        font-size: 100px;
+@media (max-width: 600px) {
+    .removeSm {
+        display: none !important;
     }
-    .title p {
-        font-size: 11px;
-    }
-    .title input {
-        transform: scale(0.9, 0.9);
-    }
-    .title button {
-        transform: scale(0.8, 0.8);
-    }
-    .title a small {
-        font-size: 10px;
+
+    #login .form {
+        padding: 4rem 0 !important;
     }
 }
 
-@media (max-width: 568px) {
+@media (max-width: 1280px) {
     .title h1 {
-        font-size: 80px;
+
+        font-size: 60px !important;
     }
-    .title p {
-        font-size: 8px;
+
+    .title h1 .high {
+        font-size: 90px !important;
     }
-    .title input {
-        transform: scale(0.8, 0.8);
-    }
-    .title button {
-        transform: scale(0.7, 0.7);
-    }
-    .title a small {
-        font-size: 10px;
+
+    #login .form {
+        padding: 6rem 2rem !important;
     }
 }
+
+@media (max-width: 1024px) {
+    .title{
+        padding-right: 0!important;
+    }
+    .title h1 {
+
+        font-size: 40px !important;
+    }
+
+    .title h1 .high {
+        font-size: 70px !important;
+    }
+}
+
 
 @keyframes transitionIn {
     from {
         opacity: 0;
         transform: translateY(-80px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);

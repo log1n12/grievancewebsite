@@ -1,11 +1,13 @@
 <?php
 session_start();
 require_once 'database/config.php';
-$confirm = "";
+$confirm = "no";
 $message = "";
 
 if (isset($_POST['submitComplaint'])) {
     $compFname = $_POST["compFname"];
+    $compLname = $_POST["compLname"];
+    $compMname = $_POST["compMname"];
     $compBrgy = $_POST["compBrgy"];
     $compHouseNo = $_POST["compHouseNo"];
     $compBday = $_POST["compBday"];
@@ -17,11 +19,14 @@ if (isset($_POST['submitComplaint'])) {
     $complaintDate1 = date("F d, Y");
     $complaintMonth = date("F");
     $complaintYear = date("Y");
+
     $complainRefNumber = "C" . $complaintDate . "" . $complaintTime;
 
-    $defFullName = $_POST["defFullname"];
+    $defFirstName = $_POST["defFirstname"];
+    $defLastName = $_POST["defLastname"];
+    $defMiddleName = $_POST["defMiddlename"];
     $defBrgy = $_POST["defBrgy"];
-    $defAddress = $_POST["defAddress"];
+    $defAddress = "Magdalena, Laguna";
     $defIdentity = $_POST["defIdentity"];
 
     $compRBIid = "";
@@ -31,12 +36,30 @@ if (isset($_POST['submitComplaint'])) {
     $compTime = $_POST["compTime"];
     $compWhere = $_POST["compWhere"];
 
+
+    //for docket number
+    $getCase = "SELECT * FROM complaint_case WHERE incident_year = '$complaintYear'";
+    $getCaseQuery = $con->query($getCase);
+    $getCaseQuery->execute();
+    $getCaseCount = $getCaseQuery->rowCount();
+
+    $caseCount = $getCaseCount + 1;
+    $caseCountF = sprintf("%03d", $caseCount);
+
+    $complaintDocNumber = $complaintYear . "-" . $caseCountF;
+
+    //end of docket number
+
+
+
     //CHECK IF USER IS EXISTING
     foreach ($compFname as $key => $value) {
-        $checkCompQuery = "SELECT * FROM rbi WHERE full_name = :fname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
+        $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND last_name = :lname AND middle_name = :mname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
         $checkCompStmt = $con->prepare($checkCompQuery);
         $checkCompStmt->execute([
             'fname' => $value,
+            'lname' => $compLname[$key],
+            'mname' => $compMname[$key],
             'houseno' => $compHouseNo[$key],
             'brgy' => $compBrgy[$key],
             'bday' => $compBday[$key]
@@ -48,10 +71,12 @@ if (isset($_POST['submitComplaint'])) {
         if (in_array($compOffice, $compBrgy) or in_array($compOffice, $defBrgy)) {
 
             foreach ($compFname as $key => $value) {
-                $checkCompQuery = "SELECT * FROM rbi WHERE full_name = :fname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
+                $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND last_name = :lname AND middle_name = :mname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
                 $checkCompStmt = $con->prepare($checkCompQuery);
                 $checkCompStmt->execute([
                     'fname' => $value,
+                    'lname' => $compLname[$key],
+                    'mname' => $compMname[$key],
                     'houseno' => $compHouseNo[$key],
                     'brgy' => $compBrgy[$key],
                     'bday' => $compBday[$key]
@@ -66,19 +91,27 @@ if (isset($_POST['submitComplaint'])) {
                 $con->exec($addToComplainant);
             }
             //insert defendant to defendant table
-            foreach ($defFullName as $key => $value) {
-                $addToDef = "INSERT INTO defendant (case_ref_no, full_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defAddress[$key]', '$defBrgy[$key]', '$defIdentity[$key]')";
+            foreach ($defFirstName as $key => $value) {
+                $addToDef = "INSERT INTO defendant (case_ref_no, first_name, last_name, middle_name, def_address, barangay, position) VALUES ('$complainRefNumber', '$value', '$defLastName[$key]', '$defMiddleName[$key]', '$defAddress', '$defBrgy[$key]', '$defIdentity[$key]')";
                 $con->exec($addToDef);
             }
             //Insert complaint information to complaint table
-            $addToComp = "INSERT INTO complaint_case (case_ref_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type, where_to) VALUES ('$complainRefNumber',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','complaint', '$compOffice')";
+            $addToComp = "INSERT INTO complaint_case (case_ref_no, docket_number, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type, where_to) VALUES ('$complainRefNumber','$complaintDocNumber',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','none','Pending','$complaintDate1','complaint', '$compOffice')";
             $addtoCompStmt = $con->prepare($addToComp);
             $addtoCompStmt->execute(array(
                 ':complaint' => $compComplaint
             ));
 
+            $notifTitle = "New Complaint";
+            $notifMesg = "Complaint was added to the pending table with the complaint reference number of: " . $complainRefNumber;
+            $notifTo = $compOffice;
+            $notifToType = "Barangay Secretary";
+            $notifFrom = "0";
+
+            require './get-notif.php';
+
             $confirm = 'yes';
-            $message = 'Complaint Successfully Sent';
+            $message = 'Your complaint reference number is: <b>' . $complainRefNumber . '</b>';
         } else {
             $confirm = "no";
             $message = "The complainant or defendant must be a resident on where you want file to complaint.";
@@ -92,6 +125,8 @@ if (isset($_POST['submitComplaint'])) {
 //WITH PICCCCCCCCCCCCCCCCCCCCCCCCCTURE
 if (isset($_POST['submitComplaintPic'])) {
     $compFname = $_POST["compFname"];
+    $compLname = $_POST["compLname"];
+    $compMname = $_POST["compMname"];
     $compBrgy = $_POST["compBrgy"];
     $compHouseNo = $_POST["compHouseNo"];
     $compBday = $_POST["compBday"];
@@ -115,12 +150,28 @@ if (isset($_POST['submitComplaintPic'])) {
     $profileImageName = time() . "_" . $_FILES['profileImage']['name'];
     $target = '../assets/' . $profileImageName;
 
+    //for docket number
+    $getCase = "SELECT * FROM complaint_case WHERE incident_year = '$complaintYear'";
+    $getCaseQuery = $con->query($getCase);
+    $getCaseQuery->execute();
+    $getCaseCount = $getCaseQuery->rowCount();
+
+    $caseCount = $getCaseCount + 1;
+    $caseCountF = sprintf("%03d", $caseCount);
+
+    $complaintDocNumber = $complaintYear . "-" . $caseCountF;
+
+    //end of docket number
+
+
     //CHECK IF USER IS EXISTING
     foreach ($compFname as $key => $value) {
-        $checkCompQuery = "SELECT * FROM rbi WHERE full_name = :fname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
+        $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND last_name = :lname AND middle_name = :mname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
         $checkCompStmt = $con->prepare($checkCompQuery);
         $checkCompStmt->execute([
             'fname' => $value,
+            'lname' => $compLname[$key],
+            'mname' => $compMname[$key],
             'houseno' => $compHouseNo[$key],
             'brgy' => $compBrgy[$key],
             'bday' => $compBday[$key]
@@ -135,10 +186,12 @@ if (isset($_POST['submitComplaintPic'])) {
 
             //Get Complainant ID
             foreach ($compFname as $key => $value) {
-                $checkCompQuery = "SELECT * FROM rbi WHERE full_name = :fname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
+                $checkCompQuery = "SELECT * FROM rbi WHERE first_name = :fname AND last_name = :lname AND middle_name = :mname AND house_no = :houseno AND brgy = :brgy AND birth_date = :bday";
                 $checkCompStmt = $con->prepare($checkCompQuery);
                 $checkCompStmt->execute([
                     'fname' => $value,
+                    'lname' => $compLname[$key],
+                    'mname' => $compMname[$key],
                     'houseno' => $compHouseNo[$key],
                     'brgy' => $compBrgy[$key],
                     'bday' => $compBday[$key]
@@ -154,15 +207,23 @@ if (isset($_POST['submitComplaintPic'])) {
             }
             //Insert complaint information to complaint table
             if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $target)) {
-                $addToComp = "INSERT INTO complaint_case (case_ref_no, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type, where_to) VALUES ('$complainRefNumber',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','$profileImageName','Pending','$complaintDate1','complaint', '$compOffice')";
+                $addToComp = "INSERT INTO complaint_case (case_ref_no, docket_number, complaint, incident_date, incident_time, incident_place, incident_year, incident_month, incident_pic, case_status, date_submit, complaint_type, where_to) VALUES ('$complainRefNumber','$complaintDocNumber',:complaint,'$compDate','$compTime','$compWhere','$complaintYear','$complaintMonth','$profileImageName','Pending','$complaintDate1','complaint', '$compOffice')";
                 $addtoCompStmt = $con->prepare($addToComp);
                 $addtoCompStmt->execute(array(
                     ':complaint' => $compComplaint
                 ));
             }
 
+            $notifTitle = "New Complaint";
+            $notifMesg = "Complaint was added to the pending table with the complaint reference number of: " . $complainRefNumber;
+            $notifTo = $compOffice;
+            $notifToType = "Barangay Secretary";
+            $notifFrom = "0";
+
+            require './get-notif.php';
+
             $confirm = 'yes';
-            $message = 'Complaint Successfully Sent';
+            $message = 'Your complaint reference number is: <b>' . $complainRefNumber . '</b>';
         } else {
             $confirm = "no";
             $message = "The complainant must be a resident on where you want file to complaint.";
@@ -182,43 +243,52 @@ if (isset($_POST['submitComplaintPic'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="../css/main-services.style.css">
 
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css">
     <title>Document</title>
 </head>
 
 <body>
     <?php include './navbar/main.navbar.php'; ?>
     <section id="topBanner">
-        <div class="container banner">
+        <div class="container banner" data-aos="zoom-out" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true">
             <div class="row main-content">
                 <div class="col-md-12 align-self-center text-center">
                     <h2 class="st section-title-heading text-uppercase">Services</h2>
-                    <h1 class="text-uppercase">Get to <span class="accent">know</span> us </h1>
-                    <p class="text-uppercase">Don't waste your time. Be sure where you will go.</p>
+                    <h3 class="text-uppercase">File your <span class="accent">Complaint</span> </h3>
+                    <p class="text-uppercase">Don't waste your time. Get the justice you deserve.</p>
                 </div>
             </div>
         </div>
     </section>
 
+
     <section id="servContent">
         <div class="container">
             <div class="sec-title text-center">
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb justify-content-center">
+                    <ol class="breadcrumb justify-content-center transparent">
                         <li class="breadcrumb-item"><a href="./service.page.php">Services</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Complaint</li>
                     </ol>
                 </nav>
-                <h1 class="text-uppercase mt-3">complaint form</h1>
+                <h3 class="text-uppercase mt-3" data-aos-offset="200" data-aos="fade-right" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true">complaint form</h3>
 
-                <p class="mt-3"> Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto cumque id quod harum dicta laboriosam illum quo odit veniam dolorum fugit temporibus at earum nostrum, assumenda quia reiciendis corrupti libero! </p>
+                <p class="mt-3 mb-2 pb-0" data-aos-offset="200" data-aos="fade-right" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true"> Ang complaint form na ito ay magagamit lamang ng mga residente ng Magdalena na nakalista sa RBI o Registry of Barangay Inhabitants sa kanilang mga barangay. Upang makaapila ng complaint, sagutan lang ang mga form ng tamang impormasyon at maghintay ng text na mangagaling sa inyong Barangay upang ikompirma kung natanggap o hindi ang inyong reklamo.</p>
+                <a href="./service-complaint-out.page.php" class="mt-0 pt-0 clickHere" data-aos-offset="200" data-aos="fade-right" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true">Ikaw ba ay hindi residente ng Magdalena? Subukan ang form na ito.</a>
             </div>
-            <div class="form-section mt-5">
+            <div class="form-section mt-5" data-aos-offset="350" data-aos="fade-up" data-aos-duration="1000" data-aos-easing="ease-in-out" data-aos-once="true">
                 <form method="post" enctype="multipart/form-data">
                     <!-- COMPLAINANT PERSONAL INFORMATION -->
                     <div class="personalInfo cC">
@@ -231,9 +301,17 @@ if (isset($_POST['submitComplaintPic'])) {
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group col-md-12">
-                                        <label for="fnameId">Full Name</label>
-                                        <input type="text" class="form-control" id="fnameId" name="compFname[]" placeholder="Full Name" required />
+                                    <div class="form-group col-md-4">
+                                        <label for="fnameId">First Name</label>
+                                        <input type="text" class="form-control" id="fnameId" name="compFname[]" placeholder="First Name" required />
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="lnameId">Last Name</label>
+                                        <input type="text" class="form-control" id="lnameId" name="compLname[]" placeholder="Last Name" required />
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="mnameId">Middle Name</label>
+                                        <input type="text" class="form-control" id="mnameId" name="compMname[]" placeholder="Middle Name" required />
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -243,7 +321,7 @@ if (isset($_POST['submitComplaintPic'])) {
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label for="barangaySelect">Barangay</label>
-                                        <select name="compBrgy[]" class="form-control barangaySelect">
+                                        <select name="compBrgy[]" class="form-select barangaySelect">
                                             <?php
                                             $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
                                             $barangayStmt = $con->query($barangayQuery);
@@ -280,8 +358,8 @@ if (isset($_POST['submitComplaintPic'])) {
                     <div class="complaintContent cC">
                         <h4 class="titleComplaint">Complaint</h4>
                         <div class="form-group">
-                            <label for="complaintOffice">Where do you want to file complaint?</label>
-                            <select name="compOffice" class="form-control complaintOffice">
+                            <label for="complaintOffice">Saang barangay gustong umapila? <b>Note: </b>Piliin ang iyong barangay o barangay ng inyong nirereklamo.</label>
+                            <select name="compOffice" class="form-select complaintOffice">
                                 <?php
                                 $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
                                 $barangayStmt = $con->query($barangayQuery);
@@ -298,20 +376,20 @@ if (isset($_POST['submitComplaintPic'])) {
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="inciDateId">Date of Incident</label>
+                                <label for="inciDateId">Araw ng Insidente</label>
                                 <input class="form-control" id="inciDateId" type="date" name="compDate" required />
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="inciTimeId">Time of Incident</label>
+                                <label for="inciTimeId">Oras ng Insidente</label>
                                 <input class="form-control" id="inciTimeId" type="time" name="compTime" required />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="inciAddress">Place of Incident</label>
+                            <label for="inciAddress">Lugar ng Insidente <b>Note: </b>Maaaring landmark ang ibigay.</label>
                             <input class="form-control" id="inciAddress" type="text" name="compWhere" placeholder="Address" required />
                         </div>
                         <div class="form-group">
-                            <label for="complaintId">Your Complaint</label>
+                            <label for="complaintId">Iyong complaint</label>
                             <textarea class="form-control" id="complaintId" name="compComplaint" placeholder="Tell us what happened" rows="3" required></textarea>
                         </div>
                     </div>
@@ -329,19 +407,29 @@ if (isset($_POST['submitComplaintPic'])) {
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-4">
-                                            <label for="defNameId">Defendant Full Name</label>
-                                            <input type="text" class="form-control" id="defNameId" name="defFullname[]" placeholder="Fullname" />
+                                            <label for="defFnameId">First Name</label>
+                                            <input type="text" class="form-control" id="defFnameId" name="defFirstname[]" placeholder="First Name" />
                                         </div>
                                         <div class="form-group col-md-4">
-                                            <label for="resId">Type of Resident</label>
-                                            <select name="defIdentity[]" class="form-control" id="resId">
+                                            <label for="defLnameId">Last Name</label>
+                                            <input type="text" class="form-control" id="defLnameId" name="defLastname[]" placeholder="Last Name" />
+                                        </div>
+                                        <div class="form-group col-md-4">
+                                            <label for="defMnameId">Middle Name</label>
+                                            <input type="text" class="form-control" id="defMnameId" name="defMiddlename[]" placeholder="Middle Name" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="resId">Uri ng Residente</label>
+                                            <select name="defIdentity[]" class="form-select" id="resId">
                                                 <option value="Resident">Resident</option>
                                                 <option value="Official">Official</option>
                                             </select>
                                         </div>
-                                        <div class="form-group col-md-4">
+                                        <div class="form-group col-md-6">
                                             <label for="brId">Barangay</label>
-                                            <select name="defBrgy[]" class="form-control" id="brId">
+                                            <select name="defBrgy[]" class="form-select" id="brId">
                                                 <?php
                                                 $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
                                                 $barangayStmt = $con->query($barangayQuery);
@@ -356,27 +444,28 @@ if (isset($_POST['submitComplaintPic'])) {
                                             </select>
                                         </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label for="defAddress">Defendant Address</label>
-                                        <input type="text" class="form-control" id="defAddress" name="defAddress[]" placeholder="Address" />
-                                    </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-8">
                                     <button class="btn submit1" type="button" name="addDefendant" id="addDef">Add Defendant</button>
-                                    <button type="button" class="btn submit1" name="noDefInfo" value="defPic" id="noDefInfo" onclick="switchDiv(this.value)"> I Dont know any information about defendant </button>
+                                    <button type="button" class="btn submit2" name="noDefInfo" value="defPic" id="noDefInfo" onclick="switchDiv(this.value)"> Paano pag di alam ang impormasyon ng nirereklamo? </button>
 
 
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="float-right">
-                                        <input class="btn submit1" type="submit" name="submitComplaint" value="Submit Complaint" />
+                            </div>
+
+                            <div class="row mt-5">
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
+                                            <label class="form-check-label" for="exampleCheck1">Nabasa at sumasangayon ako sa <a href="./terms.page.php" target="_blank"> Terms and Condition</a>.</label>
+                                        </div>
+                                        <input class="btn submit1 submitComp" type="submit" name="submitComplaint" value="Submit Complaint" />
                                     </div>
 
                                 </div>
-
                             </div>
 
                         </div>
@@ -385,8 +474,8 @@ if (isset($_POST['submitComplaintPic'])) {
                             <div class="row">
                                 <div class="col-md-12 text-center">
                                     <div class="form-group ">
-                                        <h6>Incident picture</h6>
-                                        <label for="profileImage">Present the picture that have the face of the defendant</label>
+                                        <h6>Picture ng Inyong Nirereklamo</h6>
+                                        <label for="profileImage">Kung hindi alam ang mga personal na impormasyon ng inyong nirereklamo, maaring magbigay ng picture ng defendant upang magamit ng barangay upang makilala kung sino ang inyong nirereklamo.</label>
                                         <input type="file" accept="image/png, image/jpeg" name="profileImage" id="profileImage" class="form-control-file transparent text-center" onChange="displayImage(this)" style="margin: auto;"><br>
                                         <img src="" style="max-width: 300px;" class="img-fluid transparent" id="profileDisplay" onclick="triggerClick()">
                                     </div>
@@ -398,10 +487,18 @@ if (isset($_POST['submitComplaintPic'])) {
                                     <button type="button" class="btn submit1" name="noDefPicture" value="defInfo" id="noDefPicture" onclick="switchDiv(this.value)"> Back
                                     </button>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="float-right">
-                                        <button type="submit" name="submitComplaintPic" class="btn submit1">Submit Complaint</button>
+                            </div>
+
+                            <div class="row mt-5">
+                                <div class="col-md-12">
+                                    <div class="text-center">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exampleCheck11">
+                                            <label class="form-check-label" for="exampleCheck11">Nabasa at sumasangayon ako sa <a href="./terms.page.php" target="_blank"> Terms and Condition</a>.</label>
+                                        </div>
+                                        <button type="submit" name="submitComplaintPic" class="btn submit1 submitComp">Submit Complaint</button>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -413,45 +510,7 @@ if (isset($_POST['submitComplaintPic'])) {
         </div>
     </section>
 
-    <footer class="page-footer font-small blue footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 align-self-center">
-                    <h6 class="text-uppercase"><span id="year">
-                            <script>
-                                document.getElementById('year').appendChild(document.createTextNode(new Date().getFullYear()))
-                            </script>
-                        </span>BestGroup</h6>
-                </div>
-                <div class="col-md-4 align-self-center">
-                    <h1>Fourth</h1>
-                </div>
-                <div class="col-md-4 align-self-center">
-                    <i class="fab fa-facebook fa-2x"></i>
-                    <i class="fab fa-twitter fa-2x"></i>
-                    <i class="fab fa-instagram fa-2x"></i>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <footer class="page-footer font-small text-center footer1">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 align-self-center">
-                    <h6 class="text-uppercase"><span id="year1">
-                            Copyrights
-                            <script>
-                                document.getElementById('year1').appendChild(document.createTextNode(new Date().getFullYear()))
-                            </script>
-                        </span>BestGroup</h6>
-                </div>
-                <div class="col-md-6 align-self-center">
-                    <h6 class="text-uppercase">Philippine Time: 16:00:01 am 2021 June 16</h6>
-                </div>
-            </div>
-        </div>
-
-    </footer>
+    <?php include './navbar/main.footer.php' ?>
 
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
@@ -462,8 +521,42 @@ if (isset($_POST['submitComplaintPic'])) {
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.6.0/mdb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.all.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function() {
+
+            <?php
+            if ($message != "") {
+                if ($confirm == "yes") {
+
+
+            ?>
+                    Swal.fire({
+
+                            title: 'Complaint Submitted',
+                            icon: 'success',
+                            html: '<?php echo $message ?>. You can check the complaint status <a href="./service-status.page.php">here</a>. Thank you!'
+                        }
+
+                    )
+                <?php
+                } else {
+                ?>
+                    Swal.fire(
+                        'Complaint Failed',
+                        '<?php echo $message; ?>',
+                        'error'
+                    )
+            <?php
+                }
+            }
+            ?>
 
             var x = 1;
             var max = 2;
@@ -471,10 +564,10 @@ if (isset($_POST['submitComplaintPic'])) {
 
             $("#addDef").click(function() {
                 if (x <= max) {
-                    var divAnotherDef = '<div id="waw"><div class="row"><div class="col-md-8"><h6>Defendant ' + (x + 1) + '</h6></div><div class="col-md-4"><div class="float-right"><input class="btn btn-danger" type="button" name="removeDefendant" value="X" id="removeDef" / ></div></div></div><div class="form-row"><div class="form-group col-md-4"><label for="defNameId">Defendant Full Name</label><input type="text" class="form-control" id="defNameId" name="defFullname[]" placeholder="Fullname" /></div><div class="form-group col-md-4"><label for="resId">Type of Resident</label><select name="defIdentity[]" class="form-control" id="resId"><option value="Resident">Resident</option><option value="Official">Official</option></select></div><div class="form-group col-md-4"><label for="brId">Barangay</label><select name="defBrgy[]" class="form-control" id="brId"><?php $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $barangayStmt = $con->query($barangayQuery);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    foreach ($barangayStmt as $row) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $barangayRow = $row['barangay']; ?><option value="<?php echo $barangayRow ?>"><?php echo $barangayRow ?></option><?php } ?></select></div></div><div class="form-group"><label for="defAddress">Defendant Address</label><input type="text" class="form-control" id="defAddress" name="defAddress[]" placeholder="Address" /></div></div>';
+                    var divAnotherDef = '<div id="waw"><div class="row"><div class="col-md-8"><h6>Defendant ' + (x + 1) + '</h6></div><div class="col-md-4"><div class="float-right"><input class="btn btn-danger" type="button" name="removeDefendant" value="X" id="removeDef" / ></div></div></div><div class="form-row"><div class="form-group col-md-4"><label for="defFnameId">First Name</label><input type="text" class="form-control" id="defFnameId" name="defFirstname[]" placeholder="First Name" /></div><div class="form-group col-md-4"><label for="defLnameId">Last Name</label><input type="text" class="form-control" id="defLnameId" name="defLastname[]" placeholder="Last Name" /></div><div class="form-group col-md-4"><label for="defMnameId">Middle Name</label><input type="text" class="form-control" id="defMnameId" name="defMiddlename[]" placeholder="Middle Name" /></div></div><div class="form-row"><div class="form-group col-md-6"><label for="resId">Type of Resident</label><select name="defIdentity[]" class="form-select" id="resId"><option value="Resident">Resident</option><option value="Official">Official</option></select></div><div class="form-group col-md-6"><label for="brId">Barangay</label><select name="defBrgy[]" class="form-select" id="brId"><?php $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            $barangayStmt = $con->query($barangayQuery);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            foreach ($barangayStmt as $row) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $barangayRow = $row['barangay']; ?><option value="<?php echo $barangayRow ?>"><?php echo $barangayRow ?></option><?php } ?></select></div></div></div>';
 
                     $("#defInfo1-div").append(divAnotherDef);
                     x++;
@@ -494,10 +587,10 @@ if (isset($_POST['submitComplaintPic'])) {
             $("#addComp").click(function() {
                 if (x1 <= max1) {
 
-                    var divAnotherDef1 = '<div id="wew"> <div class = "row" ><div class = "col-md-8" ><h6 > Complainant ' + (x1 + 1) + '</h6> </div><div class="col-md-4"><div class="float-right"><input class="btn btn-danger" type="button" name="removeDefendant" value="X" id="removeComp" / ></div> </div>  </div> <div class = "form-row" ><div class = "form-group col-md-12" ><label for = "fnameId" > Full Name </label> <input type = "text" class = "form-control" id = "fnameId" name = "compFname[]" placeholder = "Full Name" required / ></div> </div> <div class = "form-row" ><div class = "form-group col-md-4" ><label for = "houseNumId" > House Number </label> <input type = "text" class = "form-control" id = "houseNumId" name = "compHouseNo[]" placeholder = "House Number" required / ></div> <div class = "form-group col-md-4" ><label for = "barangaySelect" > Barangay </label> <select name = "compBrgy[]" class = "form-control barangaySelect" ><?php $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $barangayStmt = $con->query($barangayQuery);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    foreach ($barangayStmt as $row) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        $barangayRow = $row['barangay']; ?> <option value = "<?php echo $barangayRow ?>" > <?php echo $barangayRow ?> </option><?php } ?></select> </div> <div class = "form-group col-md-4" ><label for = "bdayId" > Birthday </label> <input class = "form-control" id = "bdayId" type = "date" name = "compBday[]" placeholder = "Birthdate"required / ></div> </div> </div>';
+                    var divAnotherDef1 = '<div id="wew"> <div class = "row" ><div class = "col-md-8" ><h6 > Complainant ' + (x1 + 1) + '</h6> </div><div class="col-md-4"><div class="float-right"><input class="btn btn-danger" type="button" name="removeDefendant" value="X" id="removeComp" / ></div> </div>  </div> <div class="form-row"><div class="form-group col-md-4"><label for="fnameId">First Name</label><input type="text" class="form-control" id="fnameId" name="compFname[]" placeholder="First Name" required /></div><div class="form-group col-md-4"><label for="lnameId">Last Name</label><input type="text" class="form-control" id="lnameId" name="compLname[]" placeholder="Last Name" required /></div><div class="form-group col-md-4"><label for="mnameId">Middle Name</label><input type="text" class="form-control" id="mnameId" name="compMname[]" placeholder="Middle Name" required /></div></div> <div class = "form-row" ><div class = "form-group col-md-4" ><label for = "houseNumId" > House Number </label> <input type = "text" class = "form-control" id = "houseNumId" name = "compHouseNo[]" placeholder = "House Number" required / ></div> <div class = "form-group col-md-4" ><label for = "barangaySelect" > Barangay </label> <select name = "compBrgy[]" class = "form-select barangaySelect" ><?php $barangayQuery = "SELECT DISTINCT barangay FROM account WHERE barangay != 'DILG' ORDER BY barangay";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                $barangayStmt = $con->query($barangayQuery);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                foreach ($barangayStmt as $row) {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $barangayRow = $row['barangay']; ?> <option value = "<?php echo $barangayRow ?>" > <?php echo $barangayRow ?> </option><?php } ?></select> </div> <div class = "form-group col-md-4" ><label for = "bdayId" > Birthday </label> <input class = "form-control" id = "bdayId" type = "date" name = "compBday[]" placeholder = "Birthdate"required / ></div> </div> </div>';
 
 
                     $("#compInfo1-div").append(divAnotherDef1);
@@ -518,10 +611,14 @@ if (isset($_POST['submitComplaintPic'])) {
             if (divi == "defPic") { // hide the div that is not selected
 
                 document.getElementById('defInfo-div').style.display = "none";
+                document.querySelector('#exampleCheck1').required = false;
+                document.querySelector('#exampleCheck11').required = true;
 
             } else if (divi == "defInfo") {
 
                 document.getElementById('defPic-div').style.display = "none";
+                document.querySelector('#exampleCheck11').required = false;
+                document.querySelector('#exampleCheck1').required = true;
 
             }
 
@@ -578,7 +675,7 @@ if (isset($_POST['submitComplaintPic'])) {
     </script>
     <script type="text/javascript">
         $(window).scroll(function() {
-            $('.navbar').toggleClass('scrolled', $(this).scrollTop() > 600);
+            $('.navbar').toggleClass('scrolled', $(this).scrollTop() > 50);
         });
         var lastScrollTop = 0;
         $(window).scroll(function() {
@@ -594,6 +691,19 @@ if (isset($_POST['submitComplaintPic'])) {
                 lastScrollTop = st;
             }, 100);
         });
+
+        //GETTING DATE
+        $(window).on('load', function() {
+
+            displayClock();
+        });
+        var span = document.getElementById('phTime');
+
+        function displayClock() {
+            var display = new Date().toLocaleTimeString();
+            span.innerHTML = display;
+            setTimeout(displayClock, 1000);
+        }
     </script>
 </body>
 

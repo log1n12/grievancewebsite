@@ -82,10 +82,29 @@ elseif (isset($_POST['updateBrgyBtn1'])) {
 //update barangay secretary
 elseif (isset($_POST['updateBrgyBtn2'])) {
     $password = $_POST['user_pass2'];
-    $oldInfo = $secName;
-    $info = $_POST['brgy_info2'];
+    $info1 = $_POST['brgy_info2'];
+    $info2 = $_POST['brgy_info22'];
+    $info3 = $_POST['brgy_info222'];
     $whatUpdate = "sec_name";
-    updateAccount($password, $oldInfo, $info, $whatUpdate, "no");
+
+
+    if ($password == $userPassword) {
+        $unreadsql = "UPDATE account SET sec_fname = :info1, sec_mname = :info2, sec_lname = :info3 WHERE id = :id";
+        $unreadstmt = $con->prepare($unreadsql);
+        if ($unreadstmt->execute([
+            ':info1' => $info1,
+            ':info2' => $info2,
+            ':info3' => $info3,
+            ':id' => $id
+
+        ])) {
+            header("location:barangay-profile.page.php?message=name successfully updated");
+        } else {
+            $message = "Not updated";
+        }
+    } else {
+        $message = "Password doesn't match";
+    }
 }
 
 //update barangay username
@@ -130,6 +149,7 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.10.1/css/mdb.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
@@ -142,7 +162,7 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
     <?php include './navbar/barangay.navbar.php'; ?>
     <div class="page-content mb-4" id="content">
         <?php include './navbar/barangay.navbar-top.php' ?>
-        <div class="transition px-5">
+        <div class="transition px-4">
             <?php
             //SHOW ALERT MESSAGE 
             if ($message != "") {
@@ -156,14 +176,14 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
             ?>
 
             <section id="table-section" class="pb-3">
-                <div id="tableNavbar">
+                <div id="tableNavbar" class="mx-4 mt-4 mb-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h1 class="mx-4 mt-4">Account Information</h1>
+                            <h1>Account Information</h1>
                         </div>
                     </div>
                 </div>
-                <div id="tableContent" class="table-responsive px-4">
+                <div id="tableContent" class="table-responsive px-5 mb-4 py-4">
                     <div class="row">
                         <div class="col-md-12 align-self-center">
                             <table class="table mt-4 table-striped" id="myTable" style="width: 100%">
@@ -176,17 +196,17 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
                                     </tr>
                                     <tr>
                                         <th>Barangay Address</th>
-                                        <td><?php echo $brgyAddress ?></td>
-                                        <td><a href="#" type="button" data-toggle="modal" data-target="#brgyAddress">Edit</a></td>
+                                        <td>Magdalena, Laguna</td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <th>Barangay Captain</th>
                                         <td><?php echo $brgyCaptain ?></td>
-                                        <td><a href="#" type="button" data-toggle="modal" data-target="#brgyCaptain">Edit</a></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
                                         <th>Barangay Secretary</th>
-                                        <td><?php echo $secName ?></td>
+                                        <td><?php echo $fullname ?></td>
                                         <td><a href="#" type="button" data-toggle="modal" data-target="#brgySec">Edit</a></td>
                                     </tr>
                                     <tr>
@@ -215,85 +235,7 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
                 </div>
             </section>
 
-            <!-- MODAL FOR BARANGAY ADDRESS -->
-            <div class="modal fixed-left fade" id="brgyAddress" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-aside" role="document">
 
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Change Barangay Address</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" action="barangay-profile.page.php">
-                                <div class="container">
-                                    <div class="form-group">
-                                        <input type="hidden" class="form-control transparent text-muted" name="account_id" id="account_id" value="<?php echo $id ?>" required readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="br">Barangay Address</label>
-                                        <input type="text" class="form-control transparent editable" name="brgy_info" id="br" value="<?php echo $brgyAddress ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="brr">Enter Your Password</label>
-                                        <input type="password" class="form-control transparent editable" name="user_pass" id="brr" required>
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-dark btnsave" name="updateBrgyBtn">Save</button>
-                            </form>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- END OF MODAL  -->
-
-            <!-- MODAL FOR BARANGAY CAPTAIN -->
-            <div class="modal fixed-left fade" id="brgyCaptain" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-aside" role="document">
-
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Change Barangay Captain</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" action="barangay-profile.page.php">
-                                <div class="container">
-                                    <div class="form-group">
-                                        <input type="hidden" class="form-control transparent text-muted" name="account_id1" value="<?php echo $id ?>" required readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="br1">Barangay Captain Name</label>
-                                        <input type="text" class="form-control transparent editable" name="brgy_info1" id="br1" value="<?php echo $brgyCaptain ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="brr1">Enter Your Password</label>
-                                        <input type="password" class="form-control transparent editable" name="user_pass1" id="brr1" required>
-                                    </div>
-                                </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-dark btnsave" name="updateBrgyBtn1">Save</button>
-                            </form>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- END OF MODAL  -->
 
             <!-- MODAL FOR BARANGAY SECRETARY -->
             <div class="modal fixed-left fade" id="brgySec" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -312,8 +254,16 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
                                         <input type="hidden" class="form-control transparent text-muted" name="account_id2" value="<?php echo $id ?>" required readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label for="br2">Barangay Secretary Name</label>
-                                        <input type="text" class="form-control transparent editable" name="brgy_info2" id="br2" value="<?php echo $secName ?>" required>
+                                        <label for="br2">First Name</label>
+                                        <input type="text" class="form-control transparent editable" name="brgy_info2" id="br2" value="<?php echo $fname ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="br22">Middle Name</label>
+                                        <input type="text" class="form-control transparent editable" name="brgy_info22" id="br22" value="<?php echo $mname ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="br222">Last Name</label>
+                                        <input type="text" class="form-control transparent editable" name="brgy_info222" id="br222" value="<?php echo $lname ?>" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="brr2">Enter Your Password</label>
@@ -461,6 +411,40 @@ elseif (isset($_POST['updateBrgyBtn5'])) {
                 $('#sidebar, #content').toggleClass('active');
             });
         });
+    </script>
+    <script>
+        function myFunction(x) {
+            var notifIcon = document.getElementById("navbarDropdownMenuLink151");
+            if (x.matches) { // If media query matches
+                $("#sidebar").addClass("active");
+                $("#content").addClass("active");
+
+                $('#sidebarCollapse').on('click', function() {
+                    if (x.matches) {
+                        $('#sidebar, #content').addClass('activity');
+                    }
+
+                });
+
+                $('#sidebarClose').on('click', function() {
+                    $("#sidebar").addClass("active");
+                    $("#content").addClass("active");
+                    $("#content").removeClass("activity");
+                });
+
+
+
+            } else {
+                $("#sidebar").removeClass("active");
+                $("#content").removeClass("active");
+                $("#content").removeClass("activity");
+            }
+        }
+
+        var x = window.matchMedia("(max-width: 500px)")
+
+        x.addListener(myFunction) // Attach listener function on state changes
+        myFunction(x) // Call listener function at run time
     </script>
 </body>
 

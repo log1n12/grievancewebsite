@@ -1,27 +1,22 @@
 :root {
     --bgcolor: white;
-    --mainAccent: #1F5493;
-    --mainDarkAccent: #102E51;
-    --mainLightAccent: #0371BC;
-    --mainLighterestAccent: #4773AA;
-    --secondDarkAccent: #FDB81D;
-    --secondAccent: #F9C641;
-    --grayAccent: #aeb0b5;
+    --mainAccent: #3c414A;
+    --mainDarkAccent: #2D313A;
+    --mainLightAccent: #4f545c;
+    --mainLighterestAccent: #6a707c;
+    --secondDarkAccent: #BF8C20;
+    --secondLightAccent: #d4a94a;
     --fontColor: black;
 }
 
-/* Font Styles*/
-
-@import url('https://fonts.googleapis.com/css?family=Raleway&family=Roboto&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap');
-@font-face {
-    font-family: Mansalva;
-    src: url(../fonts/Mansalva-Regular.ttf);
-}
-.btn{
+.btn {
     border-radius: 0;
 }
+
+.rArrow {
+    color: var(--secondDarkAccent);
+}
+
 * {
     /* border: 1px solid red; */
 }
@@ -35,50 +30,106 @@ html {
 }
 
 body {
-    background-color: var(--d-gray);
+    background-color: white;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+    font-size: 1rem;
+    color: #212529;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700 !important;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+p {
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+/* SCROLL BAR */
+
+body::-webkit-scrollbar {
+    width: 12px;
+    height: 6px;
+}
+
+body::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+body::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: var(--mainDarkAccent);
+}
+
+body::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.9);
 }
 
 /*============ NAVBAR =============*/
 
-.scrolled {
-    background-color: black;
-    transition: transform .8s ease;
-    box-shadow: 3px 10px 10px rgba(0, 0, 0, 0.1);
+.navbar1 {
+    background-color: #2d313a;
+    top: 0;
+    height: 3.5rem;
+    color: whitesmoke;
 }
 
-.current {
-    color: var(--light-blue);
+.navbar1 a {
+    font-weight: lighter;
+    font-size: 15px;
+}
+
+.navbar1 .navbar-nav .nav-item {
+    color: white;
+}
+
+.navbar1 .navbar-nav .nav-item:hover {
+    color: var(--secondLightAccent);
+}
+
+.scrolled {
+    background-color: #18191b;
+    transition: transform .6s ease;
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, .2);
+    padding: 40px 10px;
 }
 
 .padding {
-    padding-top: 30px;
-    padding-bottom: 30px;
+    padding: 40px 10px;
 }
 
-.navbar {
-    transition: transform 1s ease;
+.navbar2 {
+    transition: 0.5s ease-in-out;
 }
 
-.navbar .navbar-brand {
-    font-family: 'Mansalva', cursive;
-    color: white;
-    font-size: 35px;
+.navbar2 .navbar-brand {
+    font-weight: 800;
+    color: var(--secondDarkAccent);
+    font-size: 25px;
 }
 
-.navbar .navbar-brand:hover {
-    color: white;
-}
-
-.navbar .navbar-nav .nav-item {
-    color: white;
+.navbar2 .navbar-nav .nav-item {
+    color: black;
     position: relative;
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 13px;
+    font-size: 14px;
 }
 
-.navbar .navbar-nav .nav-item:hover {
-    color: var(--secondAccent);
+.navbar2 .navbar-nav .nav-item:hover {
+    color: var(--secondDarkAccent);
 }
 
 .hide {
@@ -86,78 +137,82 @@ body {
     transition: transform .8s ease;
 }
 
-.navbar.scrolled>.collapse .navbar-nav .nav-item {
-    color: black;
+.navbar2.scrolled>.container .collapse .navbar-nav .nav-item {
+    color: white;
 }
 
-.navbar.scrolled>.collapse .navbar-nav .nav-item:hover {
-    color: var(--mainLightAccent);
+.navbar2.scrolled>.container .collapse .navbar-nav .nav-item:hover {
+    color: var(--secondDarkAccent);
 }
 
 /*--------TOP BANNER--------*/
 
 #topBanner {
     margin: auto;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .5)), url('../assets/bb.jpg');
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, .6)), url('../assets/magdalena.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     width: 100%;
-    height: 100vh;
+    height: 82vh;
     background-attachment: fixed;
     background-position: center center;
     position: relative;
 }
 
 #topBanner .main-content {
-    height: 100vh;
+    height: 65vh;
 }
 
-#topBanner .main-content h1 {
-    font-family: 'Raleway', sans-serif;
+#topBanner .main-content h2 {
     color: white;
-    font-size: 85px;
+    font-size: 70px;
     font-weight: 800;
 }
 
-#topBanner .main-content h1 .accent {
+#topBanner .main-content h2 .accent {
     color: var(--secondDarkAccent);
 }
 
 #topBanner .main-content p {
-    font-family: 'Roboto', sans-serif;
     color: white;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 4px;
-    word-spacing: 2px;
+    font-weight: lighter;
 }
 
 #topBanner .submit {
     background-color: transparent;
-    border-color: white;
     color: white;
-    letter-spacing: 1px;
+    border-color: var(--secondDarkAccent);
+    letter-spacing: 2px;
+    font-size: 12px;
     transition: all linear .5s;
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: bold;
-    font-size: 15px;
     padding: 10px 0;
 }
 
 #topBanner .submit:hover {
-    background-color: white;
-    color: black;
-    border-color: var(--mainLightAccent);
+    background-color: var(--secondDarkAccent);
+    color: white;
+    border-color: var(--mainAccent);
     transition: all 1s linear;
+}
+
+
+
+#topBanner .submit:hover .rArrow {
+    color: white;
+}
+
+#topBanner .chooseSelect {
+    background-color: var(--secondDarkAccent);
+    margin: 0 200px;
+    padding: 15px 15px;
 }
 
 /*--------ABOUT--------*/
 
 #about {
     padding-top: 9rem;
-    padding-bottom: 9rem;
+    padding-bottom: 11rem;
     position: relative;
-    background-color: var(--d-gray);
     color: var(--fontColor);
 }
 
@@ -165,7 +220,7 @@ body {
     position: absolute;
     content: '';
     width: 60%;
-    height: 155px;
+    height: 175px;
     top: -50px;
     left: 0;
     background: var(--bgcolor);
@@ -176,7 +231,7 @@ body {
     position: absolute;
     content: '';
     width: 60%;
-    height: 155px;
+    height: 175px;
     top: -50px;
     right: 0;
     background: var(--bgcolor);
@@ -188,7 +243,6 @@ body {
 }
 
 #about .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
@@ -198,10 +252,9 @@ body {
 }
 
 #about .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
-    color: var(--mainLightAccent);
+    color: var(--secondDarkAccent);
 }
 
 #about .about {
@@ -217,24 +270,21 @@ body {
 
 #about .spabout .btn {
     background-color: var(--mainDarkAccent);
-    font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 15px;
     text-align: center;
     padding: 10px 0;
 }
 
-.rArrow {
-    color: var(--secondDarkAccent);
-}
-
 #about .spabout .btn:hover {
     background-color: transparent;
-    border-color: var(--mainDarkAccent);
+    border-color: transparent;
     color: black;
 }
 
-#about .spabout .fas {}
+#about .spabout .fas {
+    color: var(--secondDarkAccent);
+}
 
 #about .spabout:hover {
     position: relative;
@@ -243,17 +293,15 @@ body {
 }
 
 #about .spabout:hover h3 {
-    color: black;
+    color: var(--secondDarkAccent);
 }
 
 #about .spabout:hover .fas {
-    color: var(--mainAccent);
+    color: black;
 }
 
 #about .spabout h3 {
-    font-family: 'Julius Sans One', sans-serif;
     text-transform: uppercase;
-    color: var(--mainAccent);
     letter-spacing: 5px;
     font-size: 25px;
 }
@@ -290,17 +338,11 @@ body {
 }
 
 #videopage .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
 
-#videopage .sec-title p {
-    font-weight: lighter;
-}
-
 #videopage .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
     color: var(--secondDarkAccent);
@@ -314,30 +356,26 @@ body {
     font-weight: bolder;
 }
 
-#videopage .overlay-desc p {
-    font-size: 15px;
-    font-weight: lighter;
-    letter-spacing: 1px;
-    color: var(--light-gray);
-}
-
 #videopage .overlay-desc .submit {
     background-color: transparent;
-    border-color: white;
+    border-color: var(--secondDarkAccent);
     color: white;
     letter-spacing: 1px;
     transition: all linear .5s;
-    font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 15px;
     padding: 10px 0;
 }
 
 #videopage .overlay-desc .submit:hover {
-    background-color: var(--mainAccent);
+    background-color: var(--secondDarkAccent);
     color: white;
     border-color: var(--mainLightAccent);
     transition: all 1s linear;
+}
+
+#videopage .overlay-desc .submit:hover .fas {
+    color: white;
 }
 
 /*--------FOURTH PAGE--------*/
@@ -347,38 +385,15 @@ body {
     background-color: white;
 }
 
-#fifthpage .fpleft {
-    width: 100%;
-    height: 100vh;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--d-gray);
-}
-
 #fourthpage .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
 
-#fourthpage .sec-title p {
-    font-weight: lighter;
-}
-
 #fourthpage .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
-    color: var(--mainLighterestAccent);
-}
-
-#fourthpage .spcontent p {
-    color: var(--fontColor);
-    font-size: 15px;
-    font-weight: lighter;
+    color: var(--secondDarkAccent);
 }
 
 #fourthpage .pic {
@@ -398,7 +413,7 @@ body {
 /*--------LOCATION LOG--------*/
 
 #locationlog {
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .5)), url('../assets/bb.jpg');
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, .5)), url('../assets/bbb.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     width: 100%;
@@ -413,7 +428,6 @@ body {
 }
 
 #locationlog .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
@@ -423,7 +437,6 @@ body {
 }
 
 #locationlog .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
     color: var(--secondDarkAccent);
@@ -452,32 +465,22 @@ body {
 }
 
 #fifthpage .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
 
-#fifthpage.sec-title p {
-    font-weight: lighter;
-}
-
 #fifthpage .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
-    color: var(--mainLighterestAccent);
+    color: var(--secondDarkAccent);
 }
 
 #fifthpage .sec-title1 h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 35px;
 }
 
 #fifthpage .sec-title1 .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
-    font-size: 15px;
-    font-style: italic;
     letter-spacing: 5px;
     color: var(--secondDarkAccent);
 }
@@ -514,29 +517,33 @@ body {
 }
 
 #fifthpage h2 {
-    font-family: 'Julius Sans One', sans-serif;
     color: var(--light-gray);
     letter-spacing: 1px;
     font-size: 25px;
 }
 
 #fifthpage .submit {
-    background-color: transparent;
-    border-color: white;
+    background-color: var(--secondDarkAccent);
     color: white;
     letter-spacing: 1px;
     transition: all linear .5s;
-    font-family: 'Source Sans Pro', sans-serif;
     font-weight: bold;
     font-size: 13px;
     padding: 10px 0;
 }
 
+#fifthpage .submit .fas {
+    color: var(--mainDarkAccent);
+}
+
 #fifthpage .submit:hover {
-    background-color: var(--mainAccent);
+    background-color: var(--secondLightAccent);
     color: white;
-    border-color: var(--mainLightAccent);
     transition: all 1s linear;
+}
+
+#fifthpage .submit:hover .fas {
+    color: white;
 }
 
 /*--------SIXTH PAGE--------*/
@@ -572,20 +579,14 @@ body {
 }
 
 #sixthpage .sec-title h1 {
-    font-family: 'Raleway', sans-serif;
     font-weight: 800;
     font-size: 40px;
 }
 
-#sixthpage .sec-title p {
-    font-weight: lighter;
-}
-
 #sixthpage .section-title-heading {
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
-    color: var(--mainLighterestAccent);
+    color: var(--secondDarkAccent);
 }
 
 #sixthpage .steps {
@@ -603,7 +604,6 @@ body {
 
 #sixthpage .wup {
     z-index: 2;
-    font-family: 'Julius Sans One', sans-serif;
     font-size: 18px;
     letter-spacing: 12px;
 }
@@ -617,50 +617,42 @@ body {
 
 #sixthpage p {
     margin-top: 80px;
-    color: var(--light-gray);
-    font-size: 15px;
-    font-weight: lighter;
 }
 
 /*--------FOOTER--------*/
 
 .footer {
     padding-top: 8rem;
-    padding-bottom: 8rem;
-    background-color: var(--mainDarkAccent);
+    background-color: #22252b;
     position: relative;
     color: white;
     justify-content: center;
     text-align: center;
 }
 
-.footer .container {}
-
-.footer h6 #year {
-    color: var(--light-blue);
+.footer p {
+    color: rgb(167, 167, 167);
 }
 
-.footer i {
-    margin-right: 10px;
-    margin-left: 10px;
-}
-
-.footer i {
-    margin-right: 10px;
-    margin-left: 10px;
+.footer a {
+    color: var(--secondDarkAccent);
 }
 
 .footer h1 {
     font-family: 'Mansalva', cursive;
 }
 
+.footer .social-links {
+    color: white;
+}
+
 .footer1 {
-    padding: 1rem 0;
-    background-color: var(--mainAccent);
+    background-color: #18191b;
     position: relative;
     color: white;
     justify-content: center;
     text-align: center;
+    padding: 50px 0;
 }
 
 .footer1 h6 {
@@ -693,23 +685,80 @@ body {
     }
 }
 
+
+@media (max-width: 1025px) {
+
+    #topBanner .chooseSelect{
+        margin: 0!important;
+    }
+}
+
+@media (max-width: 420px) {
+    #topBanner .main-content h2 {
+        font-size: 40px;
+    }
+
+    h1 {
+        font-size: 2rem !important;
+    }
+
+    .section-title-heading {
+        letter-spacing: 6px !important;
+        font-size: 15px !important;
+    }
+
+    #videopage .submit {
+        margin-top: 0 !important;
+    }
+
+    #videopage h1 {
+        font-size: 1.5rem !important;
+    }
+
+    #fourthpage .pic {
+        display: none;
+    }
+
+    #fifthpage .fpright div {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+
+    #sixthpage .secondBlock {
+        margin-top: 2rem;
+    }
+
+    .padding, .scrolled {
+        padding: 20px 10px !important;
+    }
+
+    .nav-item {
+        text-align: center;
+    }
+}
+
 @media (max-width: 767px) {
     #fourthpage .spcontent {
         text-align: center;
     }
+
     #fourthpage .sppic {
         padding-bottom: 0;
         max-width: 12rem;
     }
+
     #fourthpage .pic {
         background-color: var(--body-color);
     }
+
     #sixthpage .device {
         display: none;
     }
+
     #videopage .overlay-desc p {
         display: none;
     }
+
     #secondpage .spabout:hover {
         margin-top: 2rem;
     }
@@ -720,6 +769,7 @@ body {
         opacity: 0;
         transform: translate3d(0, 160px, 0)
     }
+
     to {
         opacity: 1;
         transform: translate3d(0, 0, 0)
