@@ -1,8 +1,8 @@
 <?php
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'griv';
+$host = 'remotemysql.com';
+$user = 'CBmCmjt7U3';
+$password = '80Xwk0MnXs';
+$dbname = 'CBmCmjt7U3';
 
 $dbdsn = 'mysql:host=' . $host . ';dbname=' . $dbname;
 $con = new PDO($dbdsn, $user, $password);
